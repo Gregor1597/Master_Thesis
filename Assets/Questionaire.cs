@@ -35,7 +35,7 @@ public class Questionaire : MonoBehaviour
     };
 
     public string ID = "test";
-    private string _folder = "C:/Users/LauflaborVR2/Documents/Master_Gregor/data";
+    private string _folder = "C:/Users/Lauflabor/Documents/MT_Gregor/Master_Thesis/Data";
 
     public GameObject canvas;
     private Canvas myCanvas;
@@ -49,6 +49,8 @@ public class Questionaire : MonoBehaviour
     [HideInInspector]
     public int score; 
 
+    
+
     [HideInInspector]   
     public bool nextCondition = false;
    //[HideInInspector]
@@ -58,6 +60,8 @@ public class Questionaire : MonoBehaviour
     public Experiment experiment;
     string condition = "Platzhalter";
     private int counter = 0;
+    public GameObject   leftController;
+    public GameObject rightController;
 
     // Start is called before the first frame update
     void Start()
@@ -66,20 +70,30 @@ public class Questionaire : MonoBehaviour
         question = quest.GetComponent<TextMeshProUGUI>();
         value = val.GetComponent<TextMeshProUGUI>();
         canvas.SetActive(false);
+        leftController.SetActive(false);
+        rightController.SetActive(false);
         condition = experiment.getCondition();
+        
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-
+                if(string.IsNullOrEmpty(condition)){
+                    condition = experiment.getCondition();
+                    
+                }
                 if(clicked == 1 && nextCondition== true ){
                         nextCondition = false;  
+                        condition = experiment.getCondition();
                          
                 }
             
                  if(clicked > _questions.Count){
                     canvas.SetActive(false);
+                    leftController.SetActive(false);
+                    rightController.SetActive(false);
                     nextCondition = true; 
                     clicked = 1; 
                 }
@@ -89,6 +103,8 @@ public class Questionaire : MonoBehaviour
                     //var rand = new System.Random();
                     //_questions = _questions.OrderBy(x => rand.Next()).ToDictionary(item => item.Key, item => item.Value);
                     canvas.SetActive(true);
+                    leftController.SetActive(true);
+                    rightController.SetActive(true);
                     //clicked = 1; 
                     question.text = _questions[clicked];
 

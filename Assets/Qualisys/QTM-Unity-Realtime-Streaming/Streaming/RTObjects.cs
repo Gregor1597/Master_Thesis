@@ -56,7 +56,6 @@ namespace QualisysRealTime.Unity
             if (rtClient.GetStreamingStatus() && !streaming)
             {
                 InitiateBodies();
-                
                 streaming = true;
             }
             if (!rtClient.GetStreamingStatus() && streaming)

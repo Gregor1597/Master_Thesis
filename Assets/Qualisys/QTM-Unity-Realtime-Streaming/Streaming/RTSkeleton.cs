@@ -23,6 +23,7 @@ namespace QualisysRealTime.Unity
 
         private HumanPoseHandler mSourcePoseHandler;
         private HumanPoseHandler mDestiationPoseHandler;
+        public bool streaming = false;
 
         private Skeleton mQtmSkeletonCache;
 #if DEBUG_SKELETON
@@ -31,7 +32,7 @@ namespace QualisysRealTime.Unity
         void Update()
         {
             var skeleton = RTClient.GetInstance().GetSkeleton(SkeletonName);
-
+           
             if (mQtmSkeletonCache != skeleton)
             {
                 mQtmSkeletonCache = skeleton;
@@ -41,8 +42,7 @@ namespace QualisysRealTime.Unity
 
                 CreateMecanimToQtmSegmentNames(SkeletonName);
 
-                if(mStreamedRootObject
-                    != null)
+                if(mStreamedRootObject != null)
                     GameObject.Destroy(mStreamedRootObject);
                 mStreamedRootObject = new GameObject(this.SkeletonName);
 
@@ -55,8 +55,8 @@ namespace QualisysRealTime.Unity
                 {
                     var gameObject = new GameObject(this.SkeletonName + "_" + segment.Value.Name);
                     gameObject.transform.parent = segment.Value.ParentId == 0 ? mStreamedRootObject.transform : mQTmSegmentIdToGameObject[segment.Value.ParentId].transform;
-                    gameObject.transform.localPosition = segment.Value.Position;
-                    gameObject.transform.localRotation = segment.Value.Rotation;
+                    gameObject.transform.localPosition = segment.Value.TPosition;
+                    gameObject.transform.localRotation = segment.Value.TRotation;
                     mQTmSegmentIdToGameObject[segment.Value.Id] = gameObject;
                 }
 
@@ -75,7 +75,9 @@ namespace QualisysRealTime.Unity
 
             if (mQtmSkeletonCache == null)
                 return;
-
+            else {
+                streaming = true; 
+            }
             //Update all the game objects
             foreach (var segment in mQtmSkeletonCache.Segments)
             {
@@ -132,8 +134,8 @@ namespace QualisysRealTime.Unity
                     scale = Vector3.one,
                 });
             }
-            
-            AvatarBuilder.BuildHumanAvatar(mStreamedRootObject,
+
+            mSourceAvatar = AvatarBuilder.BuildHumanAvatar(mStreamedRootObject,
                 new HumanDescription()
                 {
                     human = humanBones.ToArray(),

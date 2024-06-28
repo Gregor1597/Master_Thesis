@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
 
@@ -215,7 +215,6 @@ namespace QualisysRealTime.Unity
     {
         public string Name = "";
         public Dictionary<uint, Segment> Segments = new Dictionary<uint, Segment>();
-        //private Dictionary<string, List<string>> parentChildRelationships;
         public Skeleton() { }
         public Skeleton(Skeleton skeleton) 
         {
