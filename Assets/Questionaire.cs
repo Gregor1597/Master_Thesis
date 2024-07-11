@@ -35,7 +35,7 @@ public class Questionaire : MonoBehaviour
     };
 
     public string ID = "test";
-    private string _folder = "C:/Users/Lauflabor/Documents/MT_Gregor/Master_Thesis/Data";
+    private string _folder = "/data";
 
     public GameObject canvas;
     private Canvas myCanvas;
@@ -59,7 +59,6 @@ public class Questionaire : MonoBehaviour
 
     public Experiment experiment;
     string condition = "Platzhalter";
-    private int counter = 0;
     public GameObject   leftController;
     public GameObject rightController;
 

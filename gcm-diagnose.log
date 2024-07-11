@@ -1,0 +1,216 @@
+﻿Diagnose log at 2024-06-18T14:16:25Z
+
+AppPath: C:\Program Files\Git\mingw64\bin\git-credential-manager
+InstallDir: C:\Program Files\Git\mingw64\bin\
+Version: 2.0.935+8b4735fc7b
+
+------------
+Diagnostic: Environment
+Skipped: False
+Success: True
+Exception: None
+Log:
+OSType: Windows
+OSVersion: 10.0 (build 22000)
+Reading environment variables... OK
+ Variables:
+HOMEPATH=\Users\LauflaborVR2
+DriverData=C:\Windows\System32\Drivers\DriverData
+COMPUTERNAME=DESKTOP-O5132RG
+SHELL=C:\Program Files\Git\usr\bin\bash.exe
+MSYSTEM=MINGW64
+CommonProgramFiles(x86)=C:\Program Files (x86)\Common Files
+OneDrive=C:\Users\LauflaborVR2\OneDrive
+CONDA_PYTHON_EXE=C:/Users/LauflaborVR2/anaconda3\python.exe
+CUDA_PATH_V11_8=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8
+CONFIG_SITE=C:/Program Files/Git/etc/config.site
+LC_CTYPE=en_GB.UTF-8
+USERDOMAIN=DESKTOP-O5132RG
+PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+ORIGINAL_TEMP=C:/Users/LAUFLA~1/AppData/Local/Temp
+USERNAME=LauflaborVR2
+MINGW_PREFIX=C:/Program Files/Git/mingw64
+GIT_EXEC_PATH=C:/Program Files/Git/mingw64/libexec/git-core
+ACLOCAL_PATH=C:\Program Files\Git\mingw64\share\aclocal;C:\Program Files\Git\usr\share\aclocal
+TEMP=C:\Users\LAUFLA~1\AppData\Local\Temp
+LOCALAPPDATA=C:\Users\LauflaborVR2\AppData\Local
+MANPATH=C:\Program Files\Git\mingw64\local\man;C:\Program Files\Git\mingw64\share\man;C:\Program Files\Git\usr\local\man;C:\Program Files\Git\usr\share\man;C:\Program Files\Git\usr\man;C:\Program Files\Git\share\man
+_CE_CONDA=
+TERM=xterm
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 167 Stepping 1, GenuineIntel
+MSYSTEM_CARCH=x86_64
+PROGRAMFILES=C:\Program Files (x86)
+CUDA_PATH_V12_1=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1
+CONDA_EXE=C:/Users/LauflaborVR2/anaconda3\Scripts\conda.exe
+_CE_M=
+TERM_PROGRAM_VERSION=3.6.3
+CONDA_SHLVL=0
+PROCESSOR_REVISION=a701
+SYSTEMROOT=C:\Windows
+TERM_PROGRAM=mintty
+PROCESSOR_LEVEL=6
+NUMBER_OF_PROCESSORS=16
+SSH_ASKPASS=C:/Program Files/Git/mingw64/bin/git-askpass.exe
+SHLVL=1
+SYSTEMDRIVE=C:
+ORIGINAL_TMP=C:/Users/LAUFLA~1/AppData/Local/Temp
+PSModulePath=C:\Program Files\WindowsPowerShell\Modules;C:\Windows\system32\WindowsPowerShell\v1.0\Modules
+PUBLIC=C:\Users\Public
+FPS_BROWSER_USER_PROFILE_STRING=Default
+PKG_CONFIG_PATH=C:\Program Files\Git\mingw64\lib\pkgconfig;C:\Program Files\Git\mingw64\share\pkgconfig
+NVTOOLSEXT_PATH=C:\Program Files\NVIDIA Corporation\NvToolsExt\
+MSYSTEM_PREFIX=C:/Program Files/Git/mingw64
+WINDIR=C:\Windows
+PLINK_PROTOCOL=ssh
+INFOPATH=C:\Program Files\Git\mingw64\local\info;C:\Program Files\Git\mingw64\share\info;C:\Program Files\Git\usr\local\info;C:\Program Files\Git\usr\share\info;C:\Program Files\Git\usr\info;C:\Program Files\Git\share\info
+ProgramW6432=C:\Program Files
+PATH=C:/Program Files/Git/mingw64/libexec/git-core;C;C:\Program Files\Git\Users\LauflaborVR2\anaconda3\condabin;C:\Users\LauflaborVR2\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\LauflaborVR2\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8\libnvvp;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\libnvvp;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files\MATLAB\R2023a\runtime\win64;C:\Program Files\MATLAB\R2023a\bin;C:\Program Files\Git\cmd;C:\Program Files\dotnet;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\NVIDIA Corporation\Nsight Compute 2022.3.0;C:\Users\LauflaborVR2\AppData\Local\Microsoft\WindowsApps;C:\Users\LauflaborVR2\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\LauflaborVR2\anaconda3\condabin;C:\Users\LauflaborVR2\.dotnet\tools;C:\Users\LauflaborVR2\AppData\Local\GitHubDesktop\bin;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
+MINGW_CHOST=x86_64-w64-mingw32
+GIT_TRACE2_PARENT_SID=74bf3306-ddc5-4142-85ea-d24c0ded90af
+FPS_BROWSER_APP_PROFILE_STRING=Internet Explorer
+PKG_CONFIG_SYSTEM_LIBRARY_PATH=C:/Program Files/Git/mingw64/lib
+TMPDIR=C:\Users\LAUFLA~1\AppData\Local\Temp
+TMP=C:\Users\LAUFLA~1\AppData\Local\Temp
+CUDA_PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8
+HOME=C:\Users\LauflaborVR2
+MSYSTEM_CHOST=x86_64-w64-mingw32
+COMSPEC=C:\Windows\system32\cmd.exe
+LOGONSERVER=\\DESKTOP-O5132RG
+USERPROFILE=C:\Users\LauflaborVR2
+DISPLAY=needs-to-be-defined
+COMMONPROGRAMFILES=C:\Program Files (x86)\Common Files
+ProgramData=C:\ProgramData
+_=C:/Program Files/Git/mingw64/bin/git
+USERDOMAIN_ROAMINGPROFILE=DESKTOP-O5132RG
+APPDATA=C:\Users\LauflaborVR2\AppData\Roaming
+HOMEDRIVE=C:
+MINGW_PACKAGE_PREFIX=mingw-w64-x86_64
+CommonProgramW6432=C:\Program Files\Common Files
+SESSIONNAME=Console
+PWD=C:/Users/LauflaborVR2/GS-MT_Test
+EXEPATH=C:\Program Files\Git
+HOSTNAME=DESKTOP-O5132RG
+PROCESSOR_ARCHITEW6432=AMD64
+ORIGINAL_PATH=C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\LauflaborVR2\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8\libnvvp;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\libnvvp;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files\MATLAB\R2023a\runtime\win64;C:\Program Files\MATLAB\R2023a\bin;C:\Program Files\Git\cmd;C:\Program Files\dotnet;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\NVIDIA Corporation\Nsight Compute 2022.3.0;C:\Users\LauflaborVR2\AppData\Local\Microsoft\WindowsApps;C:\Users\LauflaborVR2\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\LauflaborVR2\anaconda3\condabin;C:\Users\LauflaborVR2\.dotnet\tools;C:\Users\LauflaborVR2\AppData\Local\GitHubDesktop\bin
+PROCESSOR_ARCHITECTURE=x86
+PS1=\[\033]0;$TITLEPREFIX:$PWD\007\]\n\[\033[32m\]\u@\h \[\033[35m\]$MSYSTEM \[\033[33m\]\w\[\033[36m\]`__git_ps1`\[\033[0m\]\n$ 
+OS=Windows_NT
+PKG_CONFIG_SYSTEM_INCLUDE_PATH=C:/Program Files/Git/mingw64/include
+ProgramFiles(x86)=C:\Program Files (x86)
+ALLUSERSPROFILE=C:\ProgramData
+
+
+------------
+Diagnostic: File system
+Skipped: False
+Success: True
+Exception: None
+Log:
+Temporary directory is 'C:\Users\LauflaborVR2\AppData\Local\Temp\'...
+Checking basic file I/O...
+Writing to temporary file 'C:\Users\LauflaborVR2\AppData\Local\Temp\fc6d4423bc4d274456b8a55b'... OK
+Reading from temporary file 'C:\Users\LauflaborVR2\AppData\Local\Temp\fc6d4423bc4d274456b8a55b'... OK
+Deleting temporary file 'C:\Users\LauflaborVR2\AppData\Local\Temp\fc6d4423bc4d274456b8a55b'... OK
+Testing IFileSystem instance...
+UserHomePath: C:\Users\LauflaborVR2
+UserDataDirectoryPath: C:\Users\LauflaborVR2\.gcm
+GetCurrentDirectory(): C:\Users\LauflaborVR2\GS-MT_Test
+
+------------
+Diagnostic: Networking
+Skipped: False
+Success: True
+Exception: None
+Log:
+Checking networking and HTTP stack...
+Creating HTTP client... OK
+IsNetworkAvailable: True
+Sending HEAD request to http://example.com... OK
+Sending HEAD request to https://example.com... OK
+Acquiring free TCP port... OK
+Testing local HTTP loopback connections...
+Creating new HTTP listener for http://localhost:58942/... OK
+Waiting for loopback connection... OK
+Writing response... OK
+Waiting for response data... OK
+Loopback connection data OK
+
+------------
+Diagnostic: Git
+Skipped: False
+Success: True
+Exception: None
+Log:
+Getting Git version... OK
+Git version is '2.40.1.windows.1'
+Locating current repository... OK
+Git repository at 'C:/Users/LauflaborVR2/GS-MT_Test/.git'
+Listing all Git configuration... OK
+Git configuration:
+file:C:/Program Files/Git/etc/gitconfig	diff.astextplain.textconv=astextplain
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.clean=git-lfs clean -- %f
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.smudge=git-lfs smudge -- %f
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.process=git-lfs filter-process
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.required=true
+file:C:/Program Files/Git/etc/gitconfig	http.sslbackend=openssl
+file:C:/Program Files/Git/etc/gitconfig	http.sslcainfo=C:/Program Files/Git/mingw64/etc/ssl/certs/ca-bundle.crt
+file:C:/Program Files/Git/etc/gitconfig	core.autocrlf=true
+file:C:/Program Files/Git/etc/gitconfig	core.fscache=true
+file:C:/Program Files/Git/etc/gitconfig	core.symlinks=false
+file:C:/Program Files/Git/etc/gitconfig	pull.rebase=false
+file:C:/Program Files/Git/etc/gitconfig	credential.helper=manager
+file:C:/Program Files/Git/etc/gitconfig	credential.https://dev.azure.com.usehttppath=true
+file:C:/Program Files/Git/etc/gitconfig	init.defaultbranch=master
+file:C:/Users/LauflaborVR2/.gitconfig	user.email=stasica@sport.tu-darmstadt.de
+file:C:/Users/LauflaborVR2/.gitconfig	user.name=LauflaborVR
+file:C:/Users/LauflaborVR2/.gitconfig	credential.https://git.rwth-aachen.de.provider=generic
+file:C:/Users/LauflaborVR2/.gitconfig	gui.recentrepo=C:/Users/LauflaborVR2/Documents/Avatarprojekt/vr-bridge
+file:C:/Users/LauflaborVR2/.gitconfig	filter.lfs.clean=git-lfs clean -- %f
+file:C:/Users/LauflaborVR2/.gitconfig	filter.lfs.smudge=git-lfs smudge -- %f
+file:C:/Users/LauflaborVR2/.gitconfig	filter.lfs.process=git-lfs filter-process
+file:C:/Users/LauflaborVR2/.gitconfig	filter.lfs.required=true
+file:.git/config	core.repositoryformatversion=0
+file:.git/config	core.filemode=false
+file:.git/config	core.bare=false
+file:.git/config	core.logallrefupdates=true
+file:.git/config	core.symlinks=false
+file:.git/config	core.ignorecase=true
+file:.git/config	remote.origin.url=https://github.com/Gregor1597/Master_Thesis.git
+file:.git/config	remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+
+
+------------
+Diagnostic: Credential storage
+Skipped: False
+Success: True
+Exception: None
+Log:
+ICredentialStore instance is of type: CredentialStore
+Writing test credential... OK
+Reading test credential... OK
+Deleting test credential... OK
+
+------------
+Diagnostic: Microsoft authentication (AAD/MSA)
+Skipped: False
+Success: True
+Exception: None
+Log:
+Broker not supported.
+Flow type is: Auto
+Gathering MSAL token cache data... OK
+CacheDirectory: C:\Users\LauflaborVR2\AppData\Local\.IdentityService
+CacheFileName: msal.cache
+CacheFilePath: C:\Users\LauflaborVR2\AppData\Local\.IdentityService\msal.cache
+Creating cache helper... OK
+Verifying MSAL token cache persistence... OK
+
+------------
+Diagnostic: GitHub API
+Skipped: False
+Success: True
+Exception: None
+Log:
+Using 'https://github.com/' as API target.
+Querying '/meta' endpoint... OK
+

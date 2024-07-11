@@ -5,21 +5,34 @@ using Unity.Tutorials.Core.Editor;
 using Unity.VisualScripting;
 using UnityEngine;
 using QualisysRealTime.Unity; 
-using Unity.XR.CoreUtils; 
+using Unity.XR.CoreUtils;
+using UnityEditor;
 
-
+public enum Identity{
+        white,
+        black,
+        asian,
+        MENA, 
+        AIAN, 
+        hispanic,
+        NHPI
+    };
+public enum Gender {
+        male, 
+        female
+    }; 
 public class Experiment : MonoBehaviour
 {
     
     List<string> conditions;
     [HideInInspector]
     public string condition;
-    public bool male; 
     public Questionaire questionaire;
-    public GameObject Mavatar; 
-    public GameObject FAvatar; 
     private GameObject avatar;
-    public GameObject master; 
+    private GameObject tempGO; 
+    private GameObject master; 
+    public Identity identity; 
+    public Gender gender;
     private List<GameObject> invisibles = new List<GameObject>(); 
     private int n; 
     public float smallScale = 0.8f; 
@@ -35,15 +48,15 @@ public class Experiment : MonoBehaviour
     void Start()
     {
         origin.MoveCameraToWorldLocation(new Vector3(0,0,0));
-        avatar = (male) ? Mavatar : FAvatar;
+        createAvatar();
         conditions  = new List<string>(){
         "NoAvatar",
         "Normal",
         "Large",
         "Small"
         };
-        foreach (Transform child in avatar.transform){
-            if(child.tag =="Face"){
+        foreach (Transform child in tempGO.transform){
+            if(child.name != "master"||child.name != "Lights"){
                 invisibles.Add(child.gameObject);
             }
         }
@@ -65,10 +78,10 @@ public class Experiment : MonoBehaviour
     void Update()
     {
         bool help = questionaire.nextCondition;
-         if (stream.streaming == true && firstTime == true){
+        /*if (stream.streaming == true && firstTime == true){
             origin.transform.position = head.transform.position - main.transform.position;
             firstTime = false; 
-        }
+        }*/
         if(help == true){
             
             var rand = new System.Random();
@@ -121,4 +134,106 @@ public class Experiment : MonoBehaviour
             i.SetActive(b);
         }
     }
+
+    private void createAvatar(){
+        Avatar destination = null;
+        Debug.Log($"Idenity: {identity} , gender: {gender}");
+        switch (identity){
+            case Identity.white:
+                if(gender == Gender.male)
+                {
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/White_M_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/White_M_1_Casual.fbx",typeof(Avatar));
+                }
+                else{
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/White_F_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/White_F_1_Casual.fbx",typeof(Avatar));
+                }
+                break;
+           case Identity.black:
+                if(gender == Gender.male)
+                {
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Black_M_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Black_M_1_Casual.fbx",typeof(Avatar));
+                }
+                else{
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Black_F_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Black_F_1_Casual.fbx",typeof(Avatar));
+                }
+                break;
+            case Identity.asian:
+                if(gender == Gender.male)
+                {
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Asian_M_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Asian_M_1_Casual.fbx",typeof(Avatar));
+                }
+                else{
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Asian_F_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Asian_F_1_Casual.fbx",typeof(Avatar));
+                }
+                break;
+
+            case Identity.MENA:
+                if(gender == Gender.male)
+                {
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/MENA_M_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/MENA_M_1_Casual.fbx",typeof(Avatar));
+                }
+                else{
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/MENA_F_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/MENA_F_1_Casual.fbx",typeof(Avatar));
+                }
+                break;
+            case Identity.hispanic:
+                if(gender == Gender.male)
+                {
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Hispanic_M_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Hispanic_M_1_Casual.fbx",typeof(Avatar));
+                }
+                else{
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Hispanic_F_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/Hispanic_F_1_Casual.fbx",typeof(Avatar));
+                }
+                break;
+            case Identity.NHPI:
+                if(gender == Gender.male)
+                {
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/NHPI_M_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/NHPI_M_1_Casual.fbx",typeof(Avatar));
+                }
+                else{
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/NHPI_F_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/NHPI_F_1_Casual.fbx",typeof(Avatar));
+                }
+                break;
+            case Identity.AIAN:
+                if(gender == Gender.male)
+                {
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/AIAN_M_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/AIAN_M_1_Casual.fbx",typeof(Avatar));
+                }
+                else{
+                    avatar = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Avatars/AIAN_F_1_Casual.fbx",typeof(GameObject));
+                    destination = (Avatar)AssetDatabase.LoadAssetAtPath("Assets/Avatars/AIAN_F_1_Casual.fbx",typeof(Avatar));
+                }
+                break;
+        }
+
+
+        tempGO = Instantiate(avatar);
+        ConvertToPrefabInstanceSettings convertToPrefabInstanceSettings = new ConvertToPrefabInstanceSettings();
+        PrefabUtility.ConvertToPrefabInstance(tempGO, avatar, convertToPrefabInstanceSettings, InteractionMode.AutomatedAction);
+        // add component to temp prefab instance
+        tempGO.AddComponent<RTSkeleton>();
+        // apply instance overrides to prefab
+        //PrefabUtility.ApplyPrefabInstance(tempGO, InteractionMode.AutomatedAction);
+        // destroy temp prefab instance
+        //DestroyImmediate(tempGO);
+        tempGO.GetComponent<RTSkeleton>().DestinationAvatar = destination;
+        tempGO.GetComponent<RTSkeleton>().SkeletonName = questionaire.ID;
+        tempGO.transform.Rotate(0, 90, 0 );
+        
+    }
+    
 }
+
