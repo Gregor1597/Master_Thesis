@@ -58,6 +58,9 @@ namespace QualisysRealTime.Unity
                     gameObject.transform.localPosition = segment.Value.TPosition;
                     gameObject.transform.localRotation = segment.Value.TRotation;
                     mQTmSegmentIdToGameObject[segment.Value.Id] = gameObject;
+                    if(segment.Value.Name == "Hips"){
+                        gameObject.AddComponent<BoxCollider>();
+                    }
                 }
 
                 mStreamedRootObject.transform.SetParent(this.transform, false);

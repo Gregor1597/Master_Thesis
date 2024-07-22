@@ -35,7 +35,7 @@ public class Questionaire : MonoBehaviour
     };
 
     public string ID = "test";
-    private string _folder = "/data";
+    private string _folder = "data";
 
     public GameObject canvas;
     private Canvas myCanvas;
@@ -59,8 +59,11 @@ public class Questionaire : MonoBehaviour
 
     public Experiment experiment;
     string condition = "Platzhalter";
-    public GameObject   leftController;
+    public GameObject leftController;
     public GameObject rightController;
+    public Collision_Handler collision_Handler;
+
+    public int trial_number = 3; 
 
     // Start is called before the first frame update
     void Start()
@@ -72,8 +75,11 @@ public class Questionaire : MonoBehaviour
         leftController.SetActive(false);
         rightController.SetActive(false);
         condition = experiment.getCondition();
+        if(File.Exists(_folder + "/" + ID + condition + "csv")){
+            Debug.LogError($"File with ID {ID} and condition {condition} already exists!!");
+        }
         
-        
+       
     }
 
     // Update is called once per frame
@@ -94,11 +100,10 @@ public class Questionaire : MonoBehaviour
                     leftController.SetActive(false);
                     rightController.SetActive(false);
                     nextCondition = true; 
+                    collision_Handler.setCounter(0);
                     clicked = 1; 
                 }
-            
-
-                if(Keyboard.current.escapeKey.isPressed){
+                if(Keyboard.current.escapeKey.isPressed || collision_Handler.getCounter() == trial_number){
                     //var rand = new System.Random();
                     //_questions = _questions.OrderBy(x => rand.Next()).ToDictionary(item => item.Key, item => item.Value);
                     canvas.SetActive(true);
@@ -117,7 +122,7 @@ public class Questionaire : MonoBehaviour
 
 public void OnButtonClicked (){
     //Debug.Log(_questions[clicked] + score);
-    using(StreamWriter sw = new StreamWriter(_folder + "/" + ID + condition + "csv", append: true)){
+    using(StreamWriter sw = new StreamWriter("/" + _folder + "/" + ID + condition + "csv", append: true)){
         sw.WriteLine($"{clicked}, {score}");
     }
     clicked += 1;

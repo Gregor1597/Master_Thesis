@@ -29,7 +29,8 @@ public class Experiment : MonoBehaviour
     public string condition;
     public Questionaire questionaire;
     private GameObject avatar;
-    private GameObject tempGO; 
+    [HideInInspector]
+    public GameObject tempGO; 
     private GameObject master; 
     public Identity identity; 
     public Gender gender;
@@ -41,11 +42,10 @@ public class Experiment : MonoBehaviour
     private Transform CameraYOffset; 
     public Camera main; 
     private float startY;
-    public GameObject head;
-    public RTSkeleton stream; 
-    private bool firstTime;
+    //public GameObject head;
+    //public RTSkeleton stream; 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         origin.MoveCameraToWorldLocation(new Vector3(0,0,0));
         createAvatar();
@@ -56,8 +56,20 @@ public class Experiment : MonoBehaviour
         "Small"
         };
         foreach (Transform child in tempGO.transform){
+
             if(child.name != "master"||child.name != "Lights"){
                 invisibles.Add(child.gameObject);
+            }
+            if (child.name == "master"){
+                Debug.Log("Found master succesfully");
+                master = child.gameObject;
+            }
+            if(child.name == "H_DDS_HighRes"){
+               
+                child.gameObject.AddComponent<BoxCollider>();
+                child.gameObject.AddComponent<Rigidbody>();
+                //child.gameObject.AddComponent<Collison_Handler>();
+                //child.gameObject.GetComponent<BoxCollider>().isTrigger = true;
             }
         }
         CameraYOffset = origin.transform.GetChild(0); 
@@ -68,8 +80,7 @@ public class Experiment : MonoBehaviour
         Debug.Log(condition);
         conditions.Remove(condition);
         changeAvatar(condition);
-        Debug.Log(head.transform.position);
-        firstTime = false;
+        
        
 
     }
@@ -230,7 +241,7 @@ public class Experiment : MonoBehaviour
         // destroy temp prefab instance
         //DestroyImmediate(tempGO);
         tempGO.GetComponent<RTSkeleton>().DestinationAvatar = destination;
-        tempGO.GetComponent<RTSkeleton>().SkeletonName = questionaire.ID;
+        tempGO.GetComponent<RTSkeleton>().SkeletonName = "Q";
         tempGO.transform.Rotate(0, 90, 0 );
         
     }
