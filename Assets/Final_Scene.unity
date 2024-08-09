@@ -675,7 +675,7 @@ MonoBehaviour:
   experiment: {fileID: 454809358}
   leftController: {fileID: 195541494}
   rightController: {fileID: 745490519}
-  collision_Handler: {fileID: 247108503}
+  collision_Handler: {fileID: 583125542}
   trial_number: 3
 --- !u!4 &454809357
 Transform:

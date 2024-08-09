@@ -89,7 +89,8 @@ public class Experiment : MonoBehaviour
     void Update()
     {
         bool help = questionaire.nextCondition;
-        /*if (stream.streaming == true && firstTime == true){
+        /* muss noch implentiert werden
+        if (stream.streaming == true && firstTime == true){
             origin.transform.position = head.transform.position - main.transform.position;
             firstTime = false; 
         }*/
@@ -109,25 +110,39 @@ public class Experiment : MonoBehaviour
         
     }
 
+    /* nur eine idee, aber wahrscheinlich nicht
+    private void scaleAvatar(float scale){
+        Vector3 scaleTmp = object.transform.localScale;
+        scaleTmp.x /= parent.localScale.x;
+        scaleTmp.y /= parent.localScale.y;
+        scaleTmp.z /= parent.localScale.z;
+        object.transform.parent = parent;
+        object.transform.localScale = scaleTmp;
+    }*/
+
     private void changeAvatar(string condition){
         switch(condition){
             case "Normal":
                 SetInviblesActive(true);
                 master.transform.localScale = new Vector3(1, 1, 1);
+                main.transform.localScale = new Vector3(1,1,1); //muss noch getestet werden
                 //CameraYOffset.position = new Vector3(CameraYOffset.position.x, startY, CameraYOffset.position.z);
                 break;
             case "Small":
                 SetInviblesActive(true);
                 master.transform.localScale = new Vector3(smallScale,smallScale,smallScale);
+                main.transform.localScale = new Vector3(smallScale,smallScale,smallScale); //muss noch getestet werden
                 //CameraYOffset.position = new Vector3(CameraYOffset.position.x, startY + smallScale, CameraYOffset.position.z);
                 break;
             case"Large":
                 SetInviblesActive(true);
                 master.transform.localScale = new Vector3(largeScale,largeScale,largeScale);
+                main.transform.localScale = new Vector3(largeScale,largeScale,largeScale); //muss noch getestet werden
                 //CameraYOffset.position = new Vector3(CameraYOffset.position.x, startY * largeScale, CameraYOffset.position.z);
                 break;
             case"NoAvatar":
                 SetInviblesActive(false);
+                main.transform.localScale = new Vector3(1,1,1); //muss noch getestet werden
                 //CameraYOffset.position = new Vector3(CameraYOffset.position.x, startY, CameraYOffset.position.z);
                 break;
             
