@@ -94,7 +94,7 @@ public class Experiment : MonoBehaviour
             origin.transform.position = head.transform.position - main.transform.position;
             firstTime = false; 
         }*/
-        if(help == true){
+        if(help == true){ 
             
             var rand = new System.Random();
             if(conditions.Count == 0){
