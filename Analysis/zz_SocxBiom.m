@@ -8,7 +8,7 @@ clear all
 dirData = uigetdir; % open the folder where the data of the participants is in
 myFiles = dir(fullfile(dirData)); % creates
 
-for idxParticipant = 5 : 5%length(myFiles) % starting at 3 because there are additional files in (at 1 and 2) we want to skip
+for idxParticipant = 3 : length(myFiles) % starting at 3 because there are additional files in (at 1 and 2) we want to skip
     stopath = fullfile(myFiles(idxParticipant).folder,myFiles(idxParticipant).name); % this line creates the path (directory) to current participant
     directory = dir(stopath);
     for idxConditions = 1:length(dir(stopath))
@@ -44,7 +44,9 @@ list_of_markers = {'C7'	'LSHO'	'RSHO'	'RBAK'	'CLAV'	'STRN'	'T10'	'SAC'	'RUPA'	'R
 
 %demo = readtable('zzz_demographische_daten_SocCogxBiom.xlsx');
 %Height = [demo.DD05_01];
+Height = readtable("heights.csv");
 %Weight = [demo.DD04_01];
+Weight = readtable("weights.csv");
 for idxPart =  1: sizeArray(2)
     % for idxTrial = 1:length(out{idxPart}) 
     for idxTrial = 2:sizeArray(1)      
@@ -76,7 +78,9 @@ CoM_Segment_d = [0.494 0.570 0.564 0.50 0.567 0.567 0.895 0.50];
 
 Radius_of_Marker = 1.2;
 %% Segment Lengths
-Height_of_Participant = 185 ;%cell2mat(Height(idxPart));
+
+
+Height_of_Participant = cell2mat(Height(idxPart));
 for idxSegment = 1: length(Segment_Length)
     Segment_Length_adj(idxSegment) = Segment_Length(idxSegment)*Height_of_Participant(1,1);
 end
