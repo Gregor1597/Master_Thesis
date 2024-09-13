@@ -120,36 +120,33 @@ public class Experiment : MonoBehaviour
         object.transform.localScale = scaleTmp;
     }*/
 
-    private void changeAvatar(string condition){
+     private void changeAvatar(string condition){
         switch(condition){
             case "Normal":
                 SetInviblesActive(true);
                 master.transform.localScale = new Vector3(1, 1, 1);
-                main.transform.localScale = new Vector3(1,1,1); //muss noch getestet werden
-                //CameraYOffset.position = new Vector3(CameraYOffset.position.x, startY, CameraYOffset.position.z);
+                origin.transform.localScale = new Vector3(1,1,1); 
                 break;
             case "Small":
                 SetInviblesActive(true);
                 master.transform.localScale = new Vector3(smallScale,smallScale,smallScale);
-                main.transform.localScale = new Vector3(smallScale,smallScale,smallScale); //muss noch getestet werden
-                //CameraYOffset.position = new Vector3(CameraYOffset.position.x, startY + smallScale, CameraYOffset.position.z);
+                origin.transform.localScale = new Vector3(smallScale,smallScale,smallScale); 
+                
                 break;
             case"Large":
                 SetInviblesActive(true);
                 master.transform.localScale = new Vector3(largeScale,largeScale,largeScale);
-                main.transform.localScale = new Vector3(largeScale,largeScale,largeScale); //muss noch getestet werden
-                //CameraYOffset.position = new Vector3(CameraYOffset.position.x, startY * largeScale, CameraYOffset.position.z);
+                origin.transform.localScale = new Vector3(largeScale,largeScale,largeScale); 
+                
                 break;
             case"NoAvatar":
                 SetInviblesActive(false);
-                main.transform.localScale = new Vector3(1,1,1); //muss noch getestet werden
-                //CameraYOffset.position = new Vector3(CameraYOffset.position.x, startY, CameraYOffset.position.z);
+                origin.transform.localScale = new Vector3(1,1,1); 
+                
                 break;
             
         }
-        /*if (stream.streaming == true){
-            origin.transform.position = head.transform.position - main.transform.localPosition;
-        }*/ //funktioniert nicht 
+        origin.transform.localPosition = master.transform.position*master.transform.localScale.y;
     }
     public string getCondition(){
         return condition;

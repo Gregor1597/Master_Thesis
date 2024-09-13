@@ -1,0 +1,66 @@
+[33mcommit 56acde1aef970d3cebbe8542d17bbff801aa615d[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Wed Sep 4 17:25:43 2024 +0200
+
+    version aftre september testing in gaitlab
+
+[33mcommit 91cece9dfc7f9280bbf8d4c4d319d018c82c6e9e[m
+Merge: e99ad3f fc0c9b3
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Mon Sep 2 14:22:10 2024 +0200
+
+    Merge branch 'master' of https://github.com/Gregor1597/Master_Thesis
+
+[33mcommit fc0c9b38abc8d599078e00c0b98cf8c3aec9b09e[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Fri Aug 30 16:33:24 2024 +0200
+
+    updated vesrion for testing
+
+[33mcommit 33ff8e2c99d3830c2a194863e2dc64080d57c8eb[m
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Fri Aug 23 17:27:57 2024 +0200
+
+     First individuell changes of the matlab scripts
+
+[33mcommit 071b728174a4e79fd4391c4ba9e59a6c5581fc03[m
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Wed Aug 21 14:51:50 2024 +0200
+
+     Matlab sript for biomechnical analysis added
+
+[33mcommit a7f7b3cfffe51a9ab3a8564b26c9377566026502[m
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Fri Aug 9 15:19:52 2024 +0200
+
+    some minor changes regarding camera position and movement (not tested )
+
+[33mcommit 767a91c9a33688b459582e287e38fd0f0635471c[m
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Mon Jul 22 16:31:25 2024 +0200
+
+    Minor Improvements for the VR and first statistica tests
+
+[33mcommit 858dd947e26570b49647ffcbb568e94c843792f5[m
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Thu Jul 11 17:09:02 2024 +0200
+
+    First Improvements of the VE and descriptive statistics of the questionaires
+
+[33mcommit e99ad3f387beeb5665efec8ea26120fa9c7a6388[m
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Fri Jun 28 18:30:17 2024 +0200
+
+    Added QTM Data
+
+[33mcommit 1e42a442359f4557d3cbdf69d0a6010a1ba41c7a[m
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Fri Jun 28 17:58:25 2024 +0200
+
+    After finishing pilot studies
+
+[33mcommit 2dcfe7253fc3bb8d5c8799a628f4d1cf972448ea[m
+Author: LauflaborVR <stasica@sport.tu-darmstadt.de>
+Date:   Tue Jun 18 15:49:06 2024 +0200
+
+    First commit, empty project and .gitignore
