@@ -15,15 +15,14 @@ public class Collision_Handler : MonoBehaviour
     
     public GameObject text_mesh; 
     public GameObject black_mesh;
-    //private Image blackscreen; 
     private TextMeshProUGUI  text;
+
+    private float waitingTime = 1f;
     private bool black_screen_active = false;
     // Start is called before the first frame update
     void Start()
     {
         counter = 0;
-
-       // blackscreen = black_mesh.GetComponent<Image>();
         black_mesh.SetActive(black_screen_active);
         text = text_mesh.GetComponent<TextMeshProUGUI>();
         text_mesh.SetActive(false);
@@ -41,7 +40,8 @@ public class Collision_Handler : MonoBehaviour
     private void OnTriggerEnter(Collider collision){
 
         counter += 1; 
-        StartCoroutine(ShowAndWait(1f));
+        StartCoroutine(ShowAndWait(waitingTime));
+        StartCoroutine(DisableCollider(5*waitingTime));
         Debug.Log("Triggered,, counter = " + counter );
         text.text = counter.ToString();
     }
@@ -56,5 +56,10 @@ public class Collision_Handler : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         text_mesh.SetActive(false);
 
+    }
+    private IEnumerator DisableCollider(float waitTime){
+           this.gameObject.SetActive(false);
+           yield return new WaitForSeconds(waitTime);
+            this.gameObject.SetActive(true);
     }
 }
