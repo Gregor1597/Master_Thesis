@@ -666,7 +666,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c98d522aee32ec459e2a76db0b7a287, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 13
+  ID: 01
   canvas: {fileID: 2088310030}
   quest: {fileID: 1057146063}
   val: {fileID: 1053232888}
