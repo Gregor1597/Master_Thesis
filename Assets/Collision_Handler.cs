@@ -61,7 +61,7 @@ public class Collision_Handler : MonoBehaviour
     }
     IEnumerator DisableCollider(float waitTime){
            t_collider.enabled = false;
-           yield return new WaitForSeconds(5*waitTime);
+           yield return new WaitForSeconds(15*waitTime);
            t_collider.enabled = true;   
             }
 }

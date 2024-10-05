@@ -35,7 +35,7 @@ public class Questionaire : MonoBehaviour
     };
 
     public string ID = "test";
-    private string _folder = "data";
+    private string _folder = "Data";
 
     public GameObject canvas;
     private Canvas myCanvas;
@@ -122,7 +122,7 @@ public class Questionaire : MonoBehaviour
 
 public void OnButtonClicked (){
     //Debug.Log(_questions[clicked] + score);
-    using(StreamWriter sw = new StreamWriter("/" + _folder + "/" + ID + condition + "csv", append: true)){
+    using(StreamWriter sw = new StreamWriter("C:/Users/Lauflabor/Documents/MT_Gregor/Master_Thesis/Data" + "/" + ID + condition + ".csv", append: true)){
         sw.WriteLine($"{clicked}, {score}");
     }
     clicked += 1;

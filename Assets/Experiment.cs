@@ -50,6 +50,7 @@ public class Experiment : MonoBehaviour
         origin.MoveCameraToWorldLocation(new Vector3(0,0,0));
         createAvatar();
         conditions  = new List<string>(){
+        
         "NoAvatar",
         "Normal",
         "Large",
@@ -77,6 +78,8 @@ public class Experiment : MonoBehaviour
         var rand = new System.Random();
         n = rand.Next(conditions.Count);
         condition = conditions[n];
+        //if a specific condition is needed
+        condition = "Normal"; 
         Debug.Log(condition);
         conditions.Remove(condition);
         changeAvatar(condition);
@@ -102,6 +105,7 @@ public class Experiment : MonoBehaviour
             }
             n = rand.Next(conditions.Count);
             condition = conditions[n];
+            Debug.Log(condition);
             conditions.Remove(condition);
             changeAvatar(condition);
 
@@ -253,8 +257,8 @@ public class Experiment : MonoBehaviour
         // destroy temp prefab instance
         //DestroyImmediate(tempGO);
         tempGO.GetComponent<RTSkeleton>().DestinationAvatar = destination;
-        tempGO.GetComponent<RTSkeleton>().SkeletonName = "Q";
-        tempGO.transform.Rotate(0, 90, 0 );
+        tempGO.GetComponent<RTSkeleton>().SkeletonName = "Q";//questionaire.ID;
+        tempGO.transform.Rotate(0, 0, 0 );
         
     }
     
