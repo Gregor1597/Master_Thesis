@@ -79,7 +79,7 @@ public class Experiment : MonoBehaviour
         n = rand.Next(conditions.Count);
         condition = conditions[n];
         //if a specific condition is needed
-        condition = "Normal"; 
+        //condition = "Normal"; 
         Debug.Log(condition);
         conditions.Remove(condition);
         changeAvatar(condition);
