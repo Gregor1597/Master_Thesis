@@ -7,7 +7,7 @@ clear all
 dirData = uigetdir; % open the folder where the data of the participants is in
 myFiles = dir(fullfile(dirData)); % creates
 
-for idxParticipant = 10 : 12 %length(myFiles) % starting at 3 because there are additional files in (at 1 and 2) we want to skip
+for idxParticipant = 8: 19 %length(myFiles) % starting at 3 because there are additional files in (at 1 and 2) we want to skip
     stopath = fullfile(myFiles(idxParticipant).folder,myFiles(idxParticipant).name); % this line creates the path (directory) to current participant
     directory = dir(stopath);
     for idxConditions = 1:length(dir(stopath))
@@ -318,3 +318,47 @@ plot(out_fd_off{33, 8}(:,9))
 plot(out_fd_off{33, 8}(:,14))
 plot(out_fd_off{33, 8}(:,19))
 shg
+%% test trails schneiden
+ms = CoM(1,:);
+Df = diff(ms)
+plot(ms)
+hold on
+plot(Df*200)
+%%
+plot(CoM(1,:),CoM(2,:))
+hold on 
+plot(foot_middle(1,:), foot_middle(2,:))
+%%
+diff_C_FM1 = CoM(1,:)- foot_middle(1,:);
+diff_C_FM2 = CoM(2,:)- foot_middle(2,:);
+
+plot(diff_C_FM1)
+hold on
+plot(diff_C_FM2)
+%%
+euclid = sqrt(diff_C_FM1.^2 + diff_C_FM2.^2);
+first = true;
+trials = [];
+if (first)
+    walking = euclid > 30;
+    start = find(walking);
+    disp(start(1,1));
+   % e = CoM(1,start(1,1):end);
+    ends = CoM(1,:) < CoM(1, start(1,1));
+    e = find(ends);
+    disp(e(start(1,1)+1));
+    ttt = CoM(1,start(1,1):e(start(1,1)+1));
+    trials{1} = ttt;
+    first = false;
+%else?
+    cut_e = euclid(1, e(start(1,1)+1):end) > 50;
+    cut_c = CoM(:, e(start(1,1)+1):end);
+    start2 = find(cut_e);
+    disp(start2(1,1));
+    ends2 = cut_c(1,:) < cut_c(1, start2(1,1));
+    e2 = find(ends2);
+    disp(e2(start2(1,1)+1));
+    ttt2 = cut_c(1, start2(1,1):e2(start2(1,1)+1));
+    trials{2} = ttt2;
+end
+
