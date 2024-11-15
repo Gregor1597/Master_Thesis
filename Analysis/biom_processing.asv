@@ -384,12 +384,12 @@ euclid_smoothed = movmean(euclid, 10);
 velocity_CoM_smoothed = movmean(velocity_CoM, 10);
 
 % Erkennung der stabilen Start- und Endphasen
-stable_walking_start = find(euclid_smoothed > 50);
+stable_walking_start = find(euclid_smoothed > 15);
 stable_walking_end = find(velocity_CoM_smoothed < 190);
 
 % Filterung: Nur Bereiche mit mindestens 10 aufeinanderfolgenden Frames
-%stable_walking_start = stable_walking_start(diff([0; stable_walking_start]) > 10);
-%stable_walking_end = stable_walking_end(diff([0; stable_walking_end]) > 10);
+stable_walking_start = stable_walking_start(diff([0; stable_walking_start]) > 10);
+stable_walking_end = stable_walking_end(diff([0; stable_walking_end]) > 10);
 
 % Debugging: Visualisierung der stabilen Phasen
 figure;
