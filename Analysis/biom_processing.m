@@ -15,16 +15,16 @@ for idxParticipant = 8: 19 %length(myFiles) % starting at 3 because there are ad
             txtFiles = dir(fullfile(stopath, directory(idxConditions).name, '*.txt'));
             for idxFile = 1 : length(matFiles)
                matfile = fullfile(matFiles(idxFile).folder, matFiles(idxFile).name); % get current file
-                eval('a = importdata (matfile)');
-                list_of_names{idxFile, idxParticipant-2} = matFiles(idxFile).name;
-                out{idxFile, idxParticipant-2} = a.Trajectories.Labeled.Data;
-                skelt_out{idxFile, idxParticipant-2} = a.Skeletons.PositionData;
+               eval('a = importdata (matfile)');
+               list_of_names{idxFile, idxParticipant-2} = matFiles(idxFile).name;
+               out{idxFile, idxParticipant-2} = a.Trajectories.Labeled.Data;
+               skelt_out{idxFile, idxParticipant-2} = a.Skeletons.PositionData;
             end
             for idxTxtFile = 1:length(txtFiles)
-                txtFile = fullfile(txtFiles(idxTxtFile).folder, txtFiles(idxTxtFile).name); % get current file
-                aa = readmatrix (txtFile);
-                list_of_txt_names{idxTxtFile, idxParticipant-2} = txtFiles(idxTxtFile).name;
-                out_fd{idxTxtFile, idxParticipant-2} = aa(18:end,:);
+               txtFile = fullfile(txtFiles(idxTxtFile).folder, txtFiles(idxTxtFile).name); % get current file
+               aa = readmatrix (txtFile);
+               list_of_txt_names{idxTxtFile, idxParticipant-2} = txtFiles(idxTxtFile).name;
+               out_fd{idxTxtFile, idxParticipant-2} = aa(18:end,:);
             end
     end
 end
@@ -68,13 +68,12 @@ Height = readtable("heights.csv");
 Weight = readtable("weights.csv");
 fc = 1.0;  
 Fs = 200;                             % Sampling Frequency (Hz)
-%%
 counter = 1;
-for idxPart =  9: 17%sizeArray(2)
+for idxPart =  10: 10%sizeArray(2)
     
     counter = counter +1;
     % for idxTrial = 1:length(out{idxPart}) 
-    for idxTrial = 2:sizeArray(1)      
+    for idxTrial = 1:5%sizeArray(1)      
         % if isempty(out{idxTrial, idxPart}) == 1 %|| idxPart == 1 && idxTrial == 13 || idxPart == 2 && idxTrial == 11 || idxPart == 5 && idxTrial == 2 || idxPart == 5 && idxTrial == 7 || idxPart == 5 && idxTrial == 9 || idxPart == 5 && idxTrial == 10 || idxPart == 5 && idxTrial == 13 || idxPart == 5 && idxTrial == 15 || idxPart == 11 && idxTrial == 3 || idxPart == 11 && idxTrial == 15 || idxPart == 22 && idxTrial == 16 || idxPart == 23 && idxTrial == 1 || idxPart == 23 && idxTrial == 3 || idxPart == 23 && idxTrial == 8 || idxPart == 28 && idxTrial == 2 || idxPart == 41 && idxTrial == 2|| idxPart == 41 && idxTrial == 6|| idxPart == 41 && idxTrial == 7 ||idxPart == 2 && idxTrial == 7 || idxPart == 7 && idxTrial == 9 || idxPart == 8 && idxTrial == 4 || idxPart == 11 && idxTrial == 7 || idxPart == 22 && idxTrial == 16  || idxPart == 22 && idxTrial == 17 || idxPart == 34 && idxTrial == 3 || idxPart == 5 && idxTrial == 4
             % continue
         %else
@@ -89,11 +88,20 @@ for idxPart =  9: 17%sizeArray(2)
                 marker_tmp = out{idxTrial, idxPart}(idxMarker,:,:);
                 marker = squeeze(marker_tmp);
                 %probleme die ich indviduell behebe
+                if idxPart == 8 && idxTrial == 9
+                    deleter = [520 : 1180];
+                    marker(:, deleter) = [];
+                end           
+                if idxPart == 8 && idxTrial == 8
+                    deleter = [2300 : 2700];
+                    marker(:, deleter) = [];
+                end                
                 if idxPart == 16 && idxTrial == 9
                     marker = marker(:,7000:end);
                 end
                 if idxPart == 14 && idxTrial == 9
-                    %???
+                    %deleter = [920 : 1080, 4720:4880, 8295:8468 ,10670:10840, 13695:13840, 16930:17090, 19855:20015, 20550:20750,22820:22970, 26620:26837];
+                    %marker(:,deleter) = [];
                 end
                 if idxPart == 10 && idxTrial == 6
                     deleter = [26700 : 27150];
@@ -102,6 +110,11 @@ for idxPart =  9: 17%sizeArray(2)
                 if idxPart == 9 && idxTrial == 7
                     deleter = [10000 : 10612, 25637:25969];
                     marker(:, deleter) = [];
+                end
+                if idxPart == 14 && idxTrial == 9
+                    deleter = [1655 : 2245,6047 : 6683, 9571 : 10285, 13356 : 14044, 17084: 17721, 20951 : 21539, 24473: 25024, 28021: 28605, 31700: 32260];
+                    delter = deleter - 639;
+                    marker(:,deleter) = [];
                 end
                 %% Velocity
                 marker_tmp = marker;
@@ -328,11 +341,16 @@ else
     foot_middle(2,:) = ((squeeze(skelt_out{idxTrial, idxPart}(2,20,:)) + squeeze(skelt_out{idxTrial, idxPart}(2,24,:)))/2)';    
     foot_middle(3,:) = ((squeeze(skelt_out{idxTrial, idxPart}(3,20,:)) + squeeze(skelt_out{idxTrial, idxPart}(3,24,:)))/2)';
      %probleme die ich indviduell behebe
+     if idxPart == 8 && idxTrial == 9
+        deleter = [520 : 1180];
+        foot_middle(:, deleter) = [];
+    end          
     if idxPart == 16 && idxTrial == 9
         foot_middle = foot_middle(:,7000:end);
     end
     if idxPart == 14 && idxTrial == 9
-        %???
+        %deleter = [920 : 1080, 4720:4880, 8295:8468 ,10670:10840, 13695:13840, 16930:17090, 19855:20015, 20550:20750,22820:22970, 26620:26837];
+        %foot_middle(:, deleter) = [];
     end
     if idxPart == 10 && idxTrial == 6
         deleter = [26700 : 27150];
@@ -342,6 +360,14 @@ else
         deleter = [10000 : 10612, 25637:25969];
         foot_middle(:, deleter) = [];
     end
+    if idxPart == 14 && idxTrial == 9
+        deleter = [1655 : 2245,6047 : 6683, 9571 : 10285, 13356 : 14044, 17084: 17721, 20951 : 21539, 24473: 25024, 28021: 28605, 31700: 32260];
+        foot_middle(:,deleter) = [];
+    end
+    if idxPart == 8 && idxTrial == 8
+        deleter = [2300 : 2700];
+        foot_middle(:, deleter) = [];
+    end           
     % Berechnung der Geschwindigkeit des CoM (in mm/s)
     dt = 1 / 200; % Zeitintervall in Sekunden (200 Hz)
     velocity_CoM = sqrt(diff(CoM(1,:)).^2 + diff(CoM(2,:)).^2) / dt;
@@ -419,8 +445,47 @@ else
     % ylabel('Geschwindigkeit CoM (mm/s)');
     % title(["Particpant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
     % shg
+
+   
 end
+
+%% schritte schneiden
+RHeel = [];
+LHeel = [];
+if(idxPart == 14)
+    LHeel(1,:) = (markerset(121,:));
+    LHeel(2,:) = (markerset(122,:));
+    LHeel(3,:) = (markerset(123,:));
+    RHeel(1,:) = (markerset(145,:));
+    RHeel(2,:) = (markerset(146,:));
+    RHeel(3,:) = (markerset(147,:));
+else
+    LHeel(1,:) = (markerset(125,:));
+    LHeel(2,:) = (markerset(126,:));
+    LHeel(3,:) = (markerset(127,:));
+    RHeel(1,:) = (markerset(149,:));
+    RHeel(2,:) = (markerset(150,:));
+    RHeel(3,:) = (markerset(151,:));
+end 
+
+steps =[];
+touchdowns = [];
+min_frame_distance = 100; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
+start_value = RHeel(3,1);
+touchdowns = find(RHeel(3,:) <= RHeel(3,1)); % finde alle Punkte niederiger als der Startpunkt
+filtered_tds = touchdowns([true, diff(touchdowns) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneiander haben
+figure
+for i = 1:length(filtered_tds)-1
+    steps{i} = RHeel(filtered_tds(i):filtered_tds(i+1)-1);
+end
+%plot(LHeel(3,:))
+scatter(filtered_tds, RHeel(3,filtered_tds), "r", "filled")
+hold on
+plot(RHeel(3,:))
+title(["Particpant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
 disp(list_of_names(idxTrial, idxPart));
+
+ 
     end
 end
 %%
@@ -430,103 +495,5 @@ hold on
 plot(out_fd_off{33, 8}(:,9))
 plot(out_fd_off{33, 8}(:,14))
 plot(out_fd_off{33, 8}(:,19))
-shg
-
-%%
-% Berechnung der Geschwindigkeit des CoM (in mm/s)
-dt = 1 / 200; % Zeitintervall in Sekunden (200 Hz)
-velocity_CoM = sqrt(diff(CoM(1,:)).^2 + diff(CoM(2,:)).^2) / dt;
-
-% Berechnung der euklidischen Disatnz zwischen Mittelfuß (CoP) & CoM
-diff_C_FM1 = CoM(1,:)- foot_middle(1,:);
-diff_C_FM2 = CoM(2,:)- foot_middle(2,:);
-euclid = sqrt(diff_C_FM1.^2 + diff_C_FM2.^2);
-
-% Erkennung der stabilen Start- und Endphasen
-stable_walking_start = find(euclid > 15);
-stable_walking_end = find(velocity_CoM(1:end-1) < 190 & diff(velocity_CoM) < 0);
-
-
-% Parameter: Mindestabstand zwischen zwei Startpunkten
-min_frames_between_starts = 0; % z. B. 500 Frames (entspricht 2.5 Sekunden bei 200 Hz)
-
-% Trials initialisieren
-trials = {};
-start_idx = 1;
-last_end_idx = 0; % Index des letzten Endpunktes
-odd_counter = 1; % uj zurücklaufen herauszufiltern
-
-% fürs debuging
-timings = [];
-timinge = [];
-
-while ~isempty(stable_walking_start)
-    % Finde den nächsten Startpunkt
-    trial_start = stable_walking_start(1);
-    
-    % Entferne Startpunkte, die vor dem letzten Endpunkt liegen oder zu nah dran sind
-    if trial_start < last_end_idx + min_frames_between_starts
-        stable_walking_start(1) = []; % Entferne diesen Startpunkt
-        continue;
-    end
-    
-    % Entferne alle verbleibenden Startpunkte bis trial_start
-    stable_walking_start(stable_walking_start <= trial_start) = [];
-    
-    % Finde den nächsten Endpunkt nach dem Startpunkt
-    trial_end = stable_walking_end(find(stable_walking_end > trial_start+400, 1)); % + 400, weil mindestens 2 sek laufzeit
-    
-    % Falls kein Endpunkt gefunden wird, abbrechen
-    if isempty(trial_end)
-        break;
-    end
-    
-    % Sicherstellen, dass der Endpunkt nach dem Startpunkt liegt und auch
-    % eine ausreichende Geschwindkeit 
-    if trial_end > trial_start && max(velocity_CoM(trial_start:trial_end)) > 700
-        % Speichere den aktuellen Trial
-        if mod(odd_counter,2) == 1
-            trials{start_idx} = CoM(:, trial_start:trial_end);
-            timings(start_idx) = trial_start;
-            timinge(start_idx) = trial_end;
-            start_idx = start_idx + 1;
-        end
-         % Aktualisiere den letzten Endpunkt
-        last_end_idx = trial_end;
-        odd_counter = odd_counter +1;
-    end
-    
-    % Entferne alle Endpunkte bis einschließlich trial_end
-    stable_walking_end(stable_walking_end <= trial_end) = [];
-end
-
-% Anzahl der gefundenen Trials ausgeben
-disp(['Anzahl der Trials gefunden: ', num2str(length(trials))]);
-
-
-%%
-% Debugging: Plot der Start- und Endpunkte
-figure;
-subplot(2,1,1);
-plot(euclid);
-hold on;
-scatter(stable_walking_start, euclid(stable_walking_start), 'g', 'filled');
-scatter(stable_walking_end, euclid(stable_walking_end), 'r', 'filled');
-ylabel('Distanz CoM-CoP (mm)');
-title('Ganginitiation und Gangende');
-
-subplot(2,1,2);
-plot(velocity_CoM);
-hold on;
-scatter(stable_walking_start, velocity_CoM(stable_walking_start), 'g', 'filled');
-scatter(stable_walking_end, velocity_CoM(stable_walking_end), 'r', 'filled');
-ylabel('Geschwindigkeit CoM (mm/s)');
-title('Geschwindigkeit');
-%%
-scatter(timings, velocity_CoM(timings), "k", "filled")
-hold on
-scatter(timinge, velocity_CoM(timinge), "r", "filled")
-plot(velocity_CoM, "b")
-ylabel('Geschwindigkeit CoM (mm/s)');
 shg
 
