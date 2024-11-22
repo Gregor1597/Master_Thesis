@@ -115,7 +115,12 @@ public class Questionaire : MonoBehaviour
                 }
                 
                        
-        
+        // add screenshot function
+                if(Keyboard.current.enterKey.isPressed){
+                
+                    ScreenCapture.CaptureScreenshot("screenshot.png");
+                    Debug.Log("screenshot taken");
+                }
         
     }
 

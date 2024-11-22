@@ -58,22 +58,20 @@ CoM_Segment_d = [0.494 0.570 0.564 0.50 0.567 0.567 0.895 0.50];
 
 Radius_of_Marker = 1.2;
 sizeArray = size(out); 
-
+results_r = struct();
+results_l = struct();
 list_of_markers = {'C7'	'LSHO'	'RSHO'	'RBAK'	'CLAV'	'STRN'	'T10'	'SAC'	'RUPA'	'RELB'	'RFRM'	'RWRB'	'RWRA'	'RFIN'	'LUPA'	'LELB'	'LFRM'	'LWRB'	'LWRA'	'LFIN'	'LASI'	'RASI'	'LTHI'	'RTHI'	'RKNE'	'LKNE'	'RTIB'	'LTIB'	'RANK'	'LANK'	'RTOE'	'LTOE'	'RHEE'	'LHEE'};
 
-%demo = readtable('zzz_demographische_daten_SocCogxBiom.xlsx');
-%Height = [0,0,0,0,0,0,0, 195, 180 , 175];
 Height = readtable("heights.csv");
-%Weight =  [0,0,0,0,0,0,0,68,72,72];
 Weight = readtable("weights.csv");
-fc = 1.0;  
+fc = 10;  
 Fs = 200;                             % Sampling Frequency (Hz)
 counter = 1;
-for idxPart =  10: 10%sizeArray(2)
+for idxPart = 16: 17%sizeArray(2)
     
     counter = counter +1;
     % for idxTrial = 1:length(out{idxPart}) 
-    for idxTrial = 1:5%sizeArray(1)      
+    for idxTrial = 1:9%sizeArray(1)      
         % if isempty(out{idxTrial, idxPart}) == 1 %|| idxPart == 1 && idxTrial == 13 || idxPart == 2 && idxTrial == 11 || idxPart == 5 && idxTrial == 2 || idxPart == 5 && idxTrial == 7 || idxPart == 5 && idxTrial == 9 || idxPart == 5 && idxTrial == 10 || idxPart == 5 && idxTrial == 13 || idxPart == 5 && idxTrial == 15 || idxPart == 11 && idxTrial == 3 || idxPart == 11 && idxTrial == 15 || idxPart == 22 && idxTrial == 16 || idxPart == 23 && idxTrial == 1 || idxPart == 23 && idxTrial == 3 || idxPart == 23 && idxTrial == 8 || idxPart == 28 && idxTrial == 2 || idxPart == 41 && idxTrial == 2|| idxPart == 41 && idxTrial == 6|| idxPart == 41 && idxTrial == 7 ||idxPart == 2 && idxTrial == 7 || idxPart == 7 && idxTrial == 9 || idxPart == 8 && idxTrial == 4 || idxPart == 11 && idxTrial == 7 || idxPart == 22 && idxTrial == 16  || idxPart == 22 && idxTrial == 17 || idxPart == 34 && idxTrial == 3 || idxPart == 5 && idxTrial == 4
             % continue
         %else
@@ -331,6 +329,8 @@ vel_tmp = diff(CoM(1,:))*Fs/1000;
 %% Cutting of longer trials
 cut_velocity = 0.19;
 min_walk_time = 1;
+% Anzahl der zusätzlichen Frames nach dem Endpunkt
+extra_frames = 10; % z. B. 50 Frames (entspricht 0.25 Sekunden bei 200 Hz)
 disp("Hallo");
 foot_middle = [];
 if contains(list_of_names(idxTrial, idxPart), "baseline")
@@ -383,10 +383,11 @@ else
     
     
     % Parameter: Mindestabstand zwischen zwei Startpunkten
-    min_frames_between_starts = 0; % z. B. 500 Frames (entspricht 2.5 Sekunden bei 200 Hz)
+    min_frames_between_starts = 200; % z. B. 500 Frames (entspricht 2.5 Sekunden bei 200 Hz)
     
     % Trials initialisieren
     trials = {};
+    trails_marker = {};
     start_idx = 1;
     last_end_idx = 0; % Index des letzten Endpunktes
     odd_counter = 1; % uj zurücklaufen herauszufiltern
@@ -420,8 +421,12 @@ else
         % eine ausreichende Geschwindkeit 
         if trial_end > trial_start && max(velocity_CoM(trial_start:trial_end)) > 620
             % Speichere den aktuellen Trial
+                % **Endpunkt erweitern**:
+                % Stelle sicher, dass wir nicht über die Datenlänge hinausgehen
+                trial_end_extended = min(trial_end + extra_frames, size(CoM, 2));
             if mod(odd_counter,2) == 1
-                trials{start_idx} = CoM(:, trial_start:trial_end);
+                trials{start_idx} = CoM(:, trial_start:trial_end_extended);
+                trails_marker{start_idx} = markerset(:, trial_start:trial_end_extended);
                 timings(start_idx) = trial_start;
                 timinge(start_idx) = trial_end;
                 start_idx = start_idx + 1;
@@ -450,42 +455,344 @@ else
 end
 
 %% schritte schneiden
-RHeel = [];
-LHeel = [];
-if(idxPart == 14)
-    LHeel(1,:) = (markerset(121,:));
-    LHeel(2,:) = (markerset(122,:));
-    LHeel(3,:) = (markerset(123,:));
-    RHeel(1,:) = (markerset(145,:));
-    RHeel(2,:) = (markerset(146,:));
-    RHeel(3,:) = (markerset(147,:));
+cond = list_of_names(idxTrial, idxPart);
+if(contains(cond, "baseline"))
+    RHeel = [];
+    LHeel = [];
+    min_frame_distance = 150; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
+    if(idxPart == 14)
+        LHeel(1,:) = (markerset(117,:));
+        LHeel(2,:) = (markerset(118,:));
+        LHeel(3,:) = (markerset(119,:));
+        RHeel(1,:) = (markerset(141,:));
+        RHeel(2,:) = (markerset(142,:));
+        RHeel(3,:) = (markerset(143,:));
+    else
+        LHeel(1,:) = (markerset(121,:));
+        LHeel(2,:) = (markerset(122,:));
+        LHeel(3,:) = (markerset(123,:));
+        RHeel(1,:) = (markerset(145,:));
+        RHeel(2,:) = (markerset(146,:));
+        RHeel(3,:) = (markerset(147,:));
+    end
+    %% RHeel
+    steps =[];
+    touchdowns = [];
+    start_value = RHeel(3,1);
+    if (idxPart == 14)
+        touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 11 && idxTrial == 2 || idxPart == 11 && idxTrial == 3)
+        touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 13 && idxTrial == 1)
+        touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 15 && idxTrial == 4)
+        touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    else
+        touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    end
+    touchdowns2 = touchdowns( touchdowns > 100 );
+    filtered_tds_r = touchdowns2([true, diff(touchdowns2) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneinander haben
+    steps{1} = RHeel(3,1: filtered_tds_r(1));
+    for i = 2:length(filtered_tds_r)-1
+        steps{i} = RHeel(3,filtered_tds_r(i):filtered_tds_r(i+1)-1);
+    end
+    % figure
+    % scatter(filtered_tds_r, RHeel(3,filtered_tds_r), "r", "filled")
+    % hold on
+    % plot(RHeel(3,:))
+    % title([" Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart) ])
+    % disp(list_of_names(idxTrial, idxPart));
+
+    %% Lheel
+    steps_l =[];
+    touchdowns_l = [];
+    start_value_l = LHeel(3,1);
+    min_start_dist = 150;
+    if (idxPart == 9)
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 2.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif( idxPart == 14 && idxTrial == 3 || idxPart == 14 && idxTrial == 4  || idxPart == 14 && idxTrial == 5)
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 3.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 17 && idxTrial == 1 )
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 10 && idxTrial == 3 || idxPart == 12 && idxTrial == 3 )
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 15)
+        if(idxTrial==1 || idxTrial == 3)
+            touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        elseif(idxTrial==4)
+            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        elseif(idxTrial==5)
+            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2));
+            helpee = find(islocalmin(LHeel(3,:),"MinProminence",0.1));% finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+            touchdowns_l(end+1)= helpee(end);
+        else
+            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        end
+        min_start_dist = 245;
+    elseif(idxPart == 16 && idxTrial == 4  )
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.95)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif (idxPart == 12 && idxTrial == 1 || idxPart == 16 && idxTrial == 5)
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 11 && idxTrial == 5 || idxPart == 12 && idxTrial == 4 )
+        touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    else
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    end
+
+    touchdowns2_l = touchdowns_l( touchdowns_l > min_start_dist ); %% mindestabstand zum startpunkt
+    filtered_tds_l = touchdowns2_l([true, diff(touchdowns2_l) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneinander haben
+    steps_l{1} = LHeel(3,1: filtered_tds_l(1));
+    for i = 2:length(filtered_tds_l)-1
+        steps_l{i} = LHeel(3,filtered_tds_l(i):filtered_tds_l(i+1)-1);
+    end
+
+
+    % Schrittlängen berechnen
+        step_lengths_l = diff(filtered_tds_l); % Differenz zwischen Touchdown-Indizes = Schrittlänge
+        num_steps_l = length(step_lengths_l);   % Anzahl der Schritte im aktuellen Trial
+        
+        % Speichere die Ergebnisse
+        results_l(idxPart).conditions(1).trials(idxTrial).numSteps = num_steps_l;
+        results_l(idxPart).conditions(1).trials(idxTrial).stepLengths = step_lengths_l;
+        results_l(idxPart).conditions(1).trials(idxTrial).meanStepLength = mean(step_lengths_l);
+
+        step_lengths_r = diff(filtered_tds_r); % Differenz zwischen Touchdown-Indizes = Schrittlänge
+        num_steps_r = length(step_lengths_r);   % Anzahl der Schritte im aktuellen Trial
+        
+        % Speichere die Ergebnisse
+        results_r(idxPart).conditions(1).trials(idxTrial).numSteps = num_steps_r;
+        results_r(idxPart).conditions(1).trials(idxTrial).stepLengths = step_lengths_r;
+        results_r(idxPart).conditions(1).trials(idxTrial).meanStepLength = mean(step_lengths_r);
+    % figure;
+    % plot(LHeel(3,:))
+    % hold on
+    % scatter(filtered_tds_l, LHeel(3,filtered_tds_l), "r", "filled")
+    % title(["Left Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
+    % disp(list_of_names(idxTrial, idxPart));
+
 else
-    LHeel(1,:) = (markerset(125,:));
-    LHeel(2,:) = (markerset(126,:));
-    LHeel(3,:) = (markerset(127,:));
-    RHeel(1,:) = (markerset(149,:));
-    RHeel(2,:) = (markerset(150,:));
-    RHeel(3,:) = (markerset(151,:));
-end 
+    for i=1 :length(trails_marker)
+        %%
+        marker_set = trails_marker{i};
+        RHeel = [];
+        LHeel = [];
+        min_frame_distance = 200; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
+        min_start_dist = 150; % mindestens abstand zum Start (soll gegen noise am Anfang helfen)
+        n = 200; % Anzahl der letzten Frames, die geprüft werden
+        m = 40; % Erweiterter Suchbereich bei fehlendem Minimum
+        threshold = 5; % Toleranzbereich um das Minimum (z. B. in mm)
+        if(idxPart == 14)
+            LHeel(1,:) = (marker_set(117,:));
+            LHeel(2,:) = (marker_set(118,:));
+            LHeel(3,:) = (marker_set(119,:));
+            RHeel(1,:) = (marker_set(141,:));
+            RHeel(2,:) = (marker_set(142,:));
+            RHeel(3,:) = (marker_set(143,:));
+        else
+            LHeel(1,:) = (marker_set(121,:));
+            LHeel(2,:) = (marker_set(122,:));
+            LHeel(3,:) = (marker_set(123,:));
+            RHeel(1,:) = (marker_set(145,:));
+            RHeel(2,:) = (marker_set(146,:));
+            RHeel(3,:) = (marker_set(147,:));
+        end
+        %% RHeel
+        steps_r = {};
+        touchdowns_r = [];
 
-steps =[];
-touchdowns = [];
-min_frame_distance = 100; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
-start_value = RHeel(3,1);
-touchdowns = find(RHeel(3,:) <= RHeel(3,1)); % finde alle Punkte niederiger als der Startpunkt
-filtered_tds = touchdowns([true, diff(touchdowns) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneiander haben
-figure
-for i = 1:length(filtered_tds)-1
-    steps{i} = RHeel(filtered_tds(i):filtered_tds(i+1)-1);
+        % Dynamische Anpassung der Prominenz
+        signal = RHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
+        start_value_r = signal(1);
+
+        % Dynamische Prominenz basierend auf Signalbereich
+        signal_range = max(signal) - min(signal);
+        prominence_factor = 0.1; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
+        dynamic_prominence = signal_range * prominence_factor;
+
+        % Finde lokale Minima mit dynamischer Prominenz
+        touchdowns_r = find(islocalmin(signal, "MinProminence", dynamic_prominence));
+
+        % Filter Touchdowns mit Mindestabstand zum Start
+        touchdowns2_r = touchdowns_r(touchdowns_r > min_start_dist);
+
+        % Filter Touchdowns mit Mindestabstand zwischen den Punkten
+        filtered_tds_r = touchdowns2_r([true, diff(touchdowns2_r) > min_frame_distance]);
+        
+        % Überprüfen des Endpunkts
+        
+        % Bereich für die letzten n Frames des Signals
+        last_n_frames = signal(end-n+1:end);
+        
+        % Minimum und Toleranzbereich in den letzten n Frames
+        min_last_n = min(last_n_frames);
+        lower_bound = min_last_n - threshold;
+        upper_bound = min_last_n + threshold;
+        
+        % Finde Kandidatenpunkte in den letzten n Frames innerhalb des Bereichs
+        candidates = find(last_n_frames >= lower_bound & last_n_frames <= upper_bound);
+        
+        if ~isempty(candidates)
+            % Wähle den frühesten bzw niedrigsten Punkt (relativ zum Ende des Signals)
+            candidate_index = find(last_n_frames == min(last_n_frames(candidates)));
+            global_index = length(signal) - n + candidate_index; % Absoluter Index im Signal
+
+            % Prüfe Mindestabstand zum letzten Touchdown
+            if global_index - filtered_tds_r(end) > min_frame_distance
+                filtered_tds_r = [filtered_tds_r, global_index]; % Hinzufügen des neuen Touchdowns
+            else
+                % Fallback: Erweiterten Bereich prüfen (m Frames)
+                last_m_frames = signal(max(1, end-m+1):end); % Sicherstellen, dass Index nicht negativ wird
+                [min_val, min_idx] = min(last_m_frames); % Minimum im erweiterten Bereich
+                global_index = max(1, length(signal) - m + min_idx); % Absoluter Index im Signal
+                disp(global_index);
+                % Prüfe Mindestabstand und füge den niedrigsten Punkt hinzu
+                if global_index - filtered_tds_r(end) > min_frame_distance
+                    filtered_tds_r = [filtered_tds_r, global_index];
+                end
+
+            end
+        else
+            %Fallback: Erweiterten Bereich prüfen (m Frames)
+            last_m_frames = signal(max(1, end-m+1):end); % Sicherstellen, dass Index nicht negativ wird
+            [min_val, min_idx] = min(last_m_frames); % Minimum im erweiterten Bereich
+            global_index = max(1, length(signal) - m + min_idx); % Absoluter Index im Signal
+            disp(global_index);
+            % Prüfe Mindestabstand und füge den niedrigsten Punkt hinzu
+            if global_index - filtered_tds_r(end) > min_frame_distance
+                filtered_tds_r = [filtered_tds_r, global_index];
+            end
+        end
+        % Schritte segmentieren
+        
+        steps_r{1} = signal(1:filtered_tds_r(1));
+        for ii = 2:length(filtered_tds_r)-1
+            steps_r{ii} = signal(filtered_tds_r(ii):filtered_tds_r(ii+1)-1);
+        end
+        % figure
+        % scatter(filtered_tds_r, RHeel(3,filtered_tds_r), "r", "filled")
+        % hold on
+        % plot(RHeel(3,:))
+        % title([" Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart), " Trial: ", i])
+        % disp(list_of_names(idxTrial, idxPart));
+
+        %% Lheel
+        steps_l = {};
+        touchdowns_l = [];
+
+        % Dynamische Anpassung der Prominenz
+        signal = LHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
+        start_value_l = signal(1);
+
+        % Dynamische Prominenz basierend auf Signalbereich
+        signal_range = max(signal) - min(signal);
+        prominence_factor = 0.1; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
+        dynamic_prominence = signal_range * prominence_factor;
+
+        % Finde lokale Minima mit dynamischer Prominenz
+        touchdowns_l = find(islocalmin(signal, "MinProminence", dynamic_prominence));
+
+        % Filter Touchdowns mit Mindestabstand zum Start
+        touchdowns2_l = touchdowns_l(touchdowns_l > min_start_dist);
+
+        % Filter Touchdowns mit Mindestabstand zwischen den Punkten
+        filtered_tds_l = touchdowns2_l([true, diff(touchdowns2_l) > min_frame_distance]);
+        
+        % Überprüfen des Endpunkts
+       
+        
+        % Bereich für die letzten n Frames des Signals
+        last_n_frames = signal(end-n+1:end);
+        
+        % Minimum und Toleranzbereich in den letzten n Frames
+        min_last_n = min(last_n_frames);
+        lower_bound = min_last_n - threshold;
+        upper_bound = min_last_n + threshold;
+        
+        % Finde Kandidatenpunkte in den letzten n Frames innerhalb des Bereichs
+        candidates = find(last_n_frames >= lower_bound & last_n_frames <= upper_bound);
+        
+        if ~isempty(candidates)
+            % Wähle den frühesten bzw niedrigsten Punkt (relativ zum Ende des Signals)
+            candidate_index = find(last_n_frames == min(last_n_frames(candidates)));
+            global_index = length(signal) - n + candidate_index; % Absoluter Index im Signal
+
+            % Prüfe Mindestabstand zum letzten Touchdown
+            if global_index - filtered_tds_l(end) > min_frame_distance
+                filtered_tds_l = [filtered_tds_l, global_index]; % Hinzufügen des neuen Touchdowns
+            else
+                % Fallback: Erweiterten Bereich prüfen (m Frames)
+                last_m_frames = signal(max(1, end-m+1):end); % Sicherstellen, dass Index nicht negativ wird
+                [min_val, min_idx] = min(last_m_frames); % Minimum im erweiterten Bereich
+                global_index = max(1, length(signal) - m + min_idx); % Absoluter Index im Signal
+                disp(global_index);
+                % Prüfe Mindestabstand und füge den niedrigsten Punkt hinzu
+                if global_index - filtered_tds_l(end) > min_frame_distance
+                    filtered_tds_l = [filtered_tds_l, global_index];
+                end
+       
+            end
+        else
+            % Fallback: Erweiterten Bereich prüfen (m Frames)
+            last_m_frames = signal(max(1, end-m+1):end); % Sicherstellen, dass Index nicht negativ wird
+            [min_val, min_idx] = min(last_m_frames); % Minimum im erweiterten Bereich
+            global_index = max(1, length(signal) - m + min_idx); % Absoluter Index im Signal
+            disp(global_index);
+            % Prüfe Mindestabstand und füge den niedrigsten Punkt hinzu
+            if global_index - filtered_tds_l(end) > min_frame_distance
+                filtered_tds_l = [filtered_tds_l, global_index];
+            end
+        end
+        
+        % Schritte segmentieren
+        steps_l{1} = signal(1:filtered_tds_l(1));
+        for j = 2:length(filtered_tds_l)-1
+            steps_l{j} = signal(filtered_tds_l(j):filtered_tds_l(j+1)-1);
+        end
+        % figure;
+        % plot(LHeel(3,:))
+        % hold on
+        % scatter(filtered_tds_l, LHeel(3,filtered_tds_l), "r", "filled")
+        % title(["Left Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart), " Trial: ", i])
+        % disp(list_of_names(idxTrial, idxPart));
+
+        if(idxPart==17 && idxTrial == 6 && i == 7)
+            steps_r(1) = [];
+        end
+
+        if(idxPart==17 && idxTrial == 6 && i == 10)
+            steps_l(1) = [];
+        end
+
+
+         % Schrittlängen berechnen
+        step_lengths_l = diff(filtered_tds_l); % Differenz zwischen Touchdown-Indizes = Schrittlänge
+        num_steps_l = length(step_lengths_l);   % Anzahl der Schritte im aktuellen Trial
+        
+        % Speichere die Ergebnisse
+        results_l(idxPart).conditions(idxTrial-4).trials(i).numSteps = num_steps_l;
+        results_l(idxPart).conditions(idxTrial-4).trials(i).stepLengths = step_lengths_l;
+        results_l(idxPart).conditions(idxTrial-4).trials(i).meanStepLength = mean(step_lengths_l);
+
+        step_lengths_r = diff(filtered_tds_r); % Differenz zwischen Touchdown-Indizes = Schrittlänge
+        num_steps_r = length(step_lengths_r);   % Anzahl der Schritte im aktuellen Trial
+        
+        % Speichere die Ergebnisse
+        results_r(idxPart).conditions(idxTrial-4).trials(i).numSteps = num_steps_r;
+        results_r(idxPart).conditions(idxTrial-4).trials(i).stepLengths = step_lengths_r;
+        results_r(idxPart).conditions(idxTrial-4).trials(i).meanStepLength = mean(step_lengths_r);
+    end
 end
-%plot(LHeel(3,:))
-scatter(filtered_tds, RHeel(3,filtered_tds), "r", "filled")
-hold on
-plot(RHeel(3,:))
-title(["Particpant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
-disp(list_of_names(idxTrial, idxPart));
-
- 
     end
 end
 %%

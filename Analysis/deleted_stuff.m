@@ -151,3 +151,55 @@ plot(velocity_CoM, "b")
 ylabel('Geschwindigkeit CoM (mm/s)');
 shg
 
+
+%%
+RHeel = [];
+LHeel = [];
+min_frame_distance = 150; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
+if(idxPart == 14)
+    LHeel(1,:) = (markerset(117,:));
+    LHeel(2,:) = (markerset(118,:));
+    LHeel(3,:) = (markerset(119,:));
+    RHeel(1,:) = (markerset(141,:));
+    RHeel(2,:) = (markerset(142,:));
+    RHeel(3,:) = (markerset(143,:));
+else
+    LHeel(1,:) = (markerset(121,:));
+    LHeel(2,:) = (markerset(122,:));
+    LHeel(3,:) = (markerset(123,:));
+    RHeel(1,:) = (markerset(145,:));
+    RHeel(2,:) = (markerset(146,:));
+    RHeel(3,:) = (markerset(147,:));
+end
+%% RHeel
+steps =[];
+touchdowns = [];
+start_value = RHeel(3,1);
+if (idxPart == 14)
+    touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+elseif(idxPart == 11 && idxTrial == 2 || idxPart == 11 && idxTrial == 3)
+     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+elseif(idxPart == 13 && idxTrial == 1)
+     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+elseif(idxPart == 15 && idxTrial == 4)
+    touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+else
+    touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+end
+touchdowns2 = touchdowns( touchdowns > 100 );
+filtered_tds = touchdowns2([true, diff(touchdowns2) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneinander haben
+steps{1} = RHeel(3,1: filtered_tds(1));
+for i = 2:length(filtered_tds)-1
+    steps{i} = RHeel(3,filtered_tds(i):filtered_tds(i+1)-1);
+end
+figure
+scatter(filtered_tds, RHeel(3,filtered_tds), "r", "filled")
+hold on
+plot(RHeel(3,:))
+title([" Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
+disp(list_of_names(idxTrial, idxPart));
+%%
