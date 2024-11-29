@@ -203,3 +203,30 @@ plot(RHeel(3,:))
 title([" Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
 disp(list_of_names(idxTrial, idxPart));
 %%
+ if idxPart == 8 && idxTrial == 9
+        deleter = 520 : 1180;
+        foot_middle(:, deleter) = [];
+    end          
+    if idxPart == 16 && idxTrial == 9
+        foot_middle = foot_middle(:,7000:end);
+    end
+    if idxPart == 14 && idxTrial == 9
+        %deleter = [920 : 1080, 4720:4880, 8295:8468 ,10670:10840, 13695:13840, 16930:17090, 19855:20015, 20550:20750,22820:22970, 26620:26837];
+        %foot_middle(:, deleter) = [];
+    end
+    if idxPart == 10 && idxTrial == 6
+        deleter = 26700 : 27150;
+        foot_middle(:, deleter) = [];
+    end
+    if idxPart == 9 && idxTrial == 7
+        % deleter = [10000 : 10612, 25637:25969];
+        % foot_middle(:, deleter) = [];
+    end
+    if idxPart == 14 && idxTrial == 9
+        deleter = [1655 : 2245,6047 : 6683, 9571 : 10285, 13356 : 14044, 17084: 17721, 20951 : 21539, 24473: 25024, 28021: 28605, 31700: 32260];
+        foot_middle(:,deleter) = [];
+    end
+    if idxPart == 8 && idxTrial == 8
+        deleter = 2300 : 2700;
+        foot_middle(:, deleter) = [];
+    end           

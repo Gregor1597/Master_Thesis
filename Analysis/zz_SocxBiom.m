@@ -290,7 +290,7 @@ m = str2num(m_tmp);
 %%
 CoM = [];
 %% werte anpassen, da Kopf bei mir noch da (was ist Headset ?)
-CoM = (rel_CoM_UpArm_r * 0.0318906606 *m + rel_CoM_UpArm_l * 0.0318906606 *m + rel_CoM_LoArm_l * 0.0182232346 *m+ rel_CoM_LoArm_r * 0.0182232346 *m+ rel_CoM_Shank_l * 0.0529612756 *m+ rel_CoM_Shank_r * 0.0529612756 *m+ rel_CoM_Thigh_l * 0.113895216 *m+ rel_CoM_Thigh_r * 0.113895216 *m+ CoM_Trunk_xyz * 0.566059226*m)/m;
+CoM = (rel_CoM_UpArm_r * 0.006 *m + rel_CoM_UpArm_l * 0.006 *m + rel_CoM_LoArm_l * 0.022 *m+ rel_CoM_LoArm_r * 0.022*m+ rel_CoM_Shank_l * 0.0465 *m+ rel_CoM_Shank_r * 0.0465 *m+ rel_CoM_Thigh_l * 0.1 *m+ rel_CoM_Thigh_r * 0.1 *m+ CoM_Trunk_xyz * 0.497*m)/m;
 
 %% Plot of CoM per segment
 % figure(1)
