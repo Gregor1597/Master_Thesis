@@ -229,4 +229,115 @@ disp(list_of_names(idxTrial, idxPart));
     if idxPart == 8 && idxTrial == 8
         deleter = 2300 : 2700;
         foot_middle(:, deleter) = [];
-    end           
+    end         
+%%
+if idxPart == 8 && idxTrial == 9
+                    % deleter = 520 : 1180;
+                    % if(first_iter)
+                    %     skeleton(:,:,deleter) = [];
+                    %     first_iter=false;
+                    % end
+                    % marker(:, deleter) = [];
+                end           
+                if idxPart == 8 && idxTrial == 8
+                    % deleter = 2300 : 2700;
+                    % if(first_iter)
+                    %     skeleton(:,:,deleter) = [];
+                    %     first_iter=false;
+                    % end
+                    % marker(:, deleter) = [];
+                end 
+                % if idxPart == 15 && idxTrial == 6
+                %     deleter = [18268 : 18970];
+                %     if(first_iter)
+                %         skeleton(:,:,deleter) = [];
+                %         first_iter=false;
+                %     end
+                %     marker(:, deleter) = [];
+                % end    
+                % if idxPart == 15 && idxTrial == 7
+                %     deleter = 5850 : 7000;
+                %     if(first_iter)
+                %         skeleton(:,:,deleter) = [];
+                %         first_iter=false;
+                %     end
+                %     marker(:, deleter) = [];
+                % end     
+                 if idxPart == 10 && idxTrial == 6
+                    % deleter = 26700 : 27150;
+                    % if(first_iter)
+                    %     skeleton(:,:,deleter) = [];
+                    %     first_iter=false;
+                    % end
+                    % marker(:, deleter) = [];
+                end
+                % if idxPart == 9 && idxTrial == 7
+                %     deleter = [1200:1800, 9450:11090, 13325:14535,17174:17991, 20970:22055, 24797:25945, 29003:30103, 32768:33928];
+                %     if(first_iter)
+                %         skeleton(:,:,deleter) = [];
+                %         first_iter=false;
+                %     end
+                %     marker(:, deleter) = [];
+                % end
+                if idxPart == 9 && idxTrial == 8
+                    % deleter = [1875:3375, 11303:11390, 14915: 15700,20127:20990, 29645:30178,33046:34095, 37581:38444,39750:44123,49550:49990];
+                    % if(first_iter)
+                    %     skeleton(:,:,deleter) = [];
+                    %     first_iter=false;
+                    % end
+                    % marker(:, deleter) = [];
+                end
+                if idxPart == 9 && idxTrial == 6
+                    % deleter = [11750:12010,36440:37005];
+                    % if(first_iter)
+                    %     skeleton(:,:,deleter) = [];
+                    %     first_iter=false;
+                    % end
+                    % marker(:, deleter) = [];
+                end
+                if idxPart == 14 && idxTrial == 7
+                    % deleter = [1655 : 2245,6047 : 6683, 9571 : 10285, 13356 : 14044, 17084: 17721, 20951 : 21539, 24473: 25024, 28021: 28605, 31700: 32260];
+                    % delter = deleter - 639;
+                    if(first_iter)
+                    %     skeleton(:,:,deleter) = [];
+                        skeleton = skeleton(:,:,400:end);
+                        first_iter=false;
+                    end
+                    marker = marker(:,400:end);
+                    % marker(:,deleter) = [];
+                end
+
+
+                %%
+num_trials = [5,9,9,9,9];
+save('step_analysis_results_l.mat', 'results_l');
+
+% Optionale Ausgabe als CSV
+results_table_l = [];
+for participant = 8:17
+    for condition = 1:5
+        for trial = 1:num_trials(condition)
+            trial_data = results_l(participant).conditions(condition).trials(trial);
+            results_table_l = [results_table_l; participant, condition, trial, trial_data.numStrides, trial_data.meanStepLength, trial_data.velocity_mean, mean(trial_data.footAngle), mean(trial_data.kneeAngle)];
+        end
+    end
+end
+
+% Speichern als CSV
+writematrix(results_table_l,'step_analysis_results_l.csv');
+
+save('step_analysis_results_r.mat', 'results_r');
+
+% Optionale Ausgabe als CSV
+results_table_r = [];
+for participant = 8:17
+    for condition = 1:5
+        for trial = 1:num_trials(condition)
+            trial_data = results_r(participant).conditions(condition).trials(trial);
+            results_table_r = [results_table_r; participant, condition, trial, trial_data.numStrides, trial_data.meanStepLength, trial_data.velocity_mean, mean(trial_data.footAngle), mean(trial_data.kneeAngle)];
+        end
+    end
+end
+
+% Speichern als CSV
+writematrix(results_table_r,'step_analysis_results_r.csv');

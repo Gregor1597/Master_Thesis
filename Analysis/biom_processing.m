@@ -40,7 +40,8 @@ CoM_Segment_d = [0.494 0.570 0.564 0.50 0.567 0.567 0.895 0.50];
 
 Radius_of_Marker = 1.2;
 sizeArray = size(out); 
-results_r = struct();results_l = struct();
+results_r = struct();
+results_l = struct();
 list_of_markers = {'C7'	'LSHO'	'RSHO'	'RBAK'	'CLAV'	'STRN'	'T10'	'SAC'	'RUPA'	'RELB'	'RFRM'	'RWRB'	'RWRA'	'RFIN'	'LUPA'	'LELB'	'LFRM'	'LWRB'	'LWRA'	'LFIN'	'LASI'	'RASI'	'LTHI'	'RTHI'	'RKNE'	'LKNE'	'RTIB'	'LTIB'	'RANK'	'LANK'	'RTOE'	'LTOE'	'RHEE'	'LHEE'};
 
 Height = readtable("heights.csv");
@@ -49,10 +50,9 @@ fc = 10;
 Fs = 200;                             % Sampling Frequency (Hz)
 counter = 1;
 dt = 1 / 200; % Zeitintervall in Sekunden (200 Hz)
-for idxPart = 17: 17%sizeArray(2)
+for idxPart = 8: 17%sizeArray(2)
     
     counter = counter +1;
-    % for idxTrial = 1:length(out{idxPart}) 
     for idxTrial = 1:9%sizeArray(1)      
         % if isempty(out{idxTrial, idxPart}) == 1 %|| idxPart == 1 && idxTrial == 13 || idxPart == 2 && idxTrial == 11 || idxPart == 5 && idxTrial == 2 || idxPart == 5 && idxTrial == 7 || idxPart == 5 && idxTrial == 9 || idxPart == 5 && idxTrial == 10 || idxPart == 5 && idxTrial == 13 || idxPart == 5 && idxTrial == 15 || idxPart == 11 && idxTrial == 3 || idxPart == 11 && idxTrial == 15 || idxPart == 22 && idxTrial == 16 || idxPart == 23 && idxTrial == 1 || idxPart == 23 && idxTrial == 3 || idxPart == 23 && idxTrial == 8 || idxPart == 28 && idxTrial == 2 || idxPart == 41 && idxTrial == 2|| idxPart == 41 && idxTrial == 6|| idxPart == 41 && idxTrial == 7 ||idxPart == 2 && idxTrial == 7 || idxPart == 7 && idxTrial == 9 || idxPart == 8 && idxTrial == 4 || idxPart == 11 && idxTrial == 7 || idxPart == 22 && idxTrial == 16  || idxPart == 22 && idxTrial == 17 || idxPart == 34 && idxTrial == 3 || idxPart == 5 && idxTrial == 4
             % continue
@@ -70,38 +70,7 @@ for idxPart = 17: 17%sizeArray(2)
                 marker_tmp = out{idxTrial, idxPart}(idxMarker,:,:);
                 marker = squeeze(marker_tmp);
                 %probleme die ich indviduell behebe
-                if idxPart == 8 && idxTrial == 9
-                    % deleter = 520 : 1180;
-                    % if(first_iter)
-                    %     skeleton(:,:,deleter) = [];
-                    %     first_iter=false;
-                    % end
-                    % marker(:, deleter) = [];
-                end           
-                if idxPart == 8 && idxTrial == 8
-                    % deleter = 2300 : 2700;
-                    % if(first_iter)
-                    %     skeleton(:,:,deleter) = [];
-                    %     first_iter=false;
-                    % end
-                    % marker(:, deleter) = [];
-                end 
-                % if idxPart == 15 && idxTrial == 6
-                %     deleter = [18268 : 18970];
-                %     if(first_iter)
-                %         skeleton(:,:,deleter) = [];
-                %         first_iter=false;
-                %     end
-                %     marker(:, deleter) = [];
-                % end    
-                % if idxPart == 15 && idxTrial == 7
-                %     deleter = 5850 : 7000;
-                %     if(first_iter)
-                %         skeleton(:,:,deleter) = [];
-                %         first_iter=false;
-                %     end
-                %     marker(:, deleter) = [];
-                % end           
+                
                 if idxPart == 16 && idxTrial == 9
                     if(first_iter)
                         skeleton = skeleton(:,:,8000:end);
@@ -119,50 +88,7 @@ for idxPart = 17: 17%sizeArray(2)
                     end
                     marker = marker(:,850:end);
                 end
-                if idxPart == 10 && idxTrial == 6
-                    % deleter = 26700 : 27150;
-                    % if(first_iter)
-                    %     skeleton(:,:,deleter) = [];
-                    %     first_iter=false;
-                    % end
-                    % marker(:, deleter) = [];
-                end
-                % if idxPart == 9 && idxTrial == 7
-                %     deleter = [1200:1800, 9450:11090, 13325:14535,17174:17991, 20970:22055, 24797:25945, 29003:30103, 32768:33928];
-                %     if(first_iter)
-                %         skeleton(:,:,deleter) = [];
-                %         first_iter=false;
-                %     end
-                %     marker(:, deleter) = [];
-                % end
-                if idxPart == 9 && idxTrial == 8
-                    % deleter = [1875:3375, 11303:11390, 14915: 15700,20127:20990, 29645:30178,33046:34095, 37581:38444,39750:44123,49550:49990];
-                    % if(first_iter)
-                    %     skeleton(:,:,deleter) = [];
-                    %     first_iter=false;
-                    % end
-                    % marker(:, deleter) = [];
-                end
-                if idxPart == 9 && idxTrial == 6
-                    % deleter = [11750:12010,36440:37005];
-                    % if(first_iter)
-                    %     skeleton(:,:,deleter) = [];
-                    %     first_iter=false;
-                    % end
-                    % marker(:, deleter) = [];
-                end
-                if idxPart == 14 && idxTrial == 7
-                    % deleter = [1655 : 2245,6047 : 6683, 9571 : 10285, 13356 : 14044, 17084: 17721, 20951 : 21539, 24473: 25024, 28021: 28605, 31700: 32260];
-                    % delter = deleter - 639;
-                    if(first_iter)
-                    %     skeleton(:,:,deleter) = [];
-                        skeleton = skeleton(:,:,400:end);
-                        first_iter=false;
-                    end
-                    marker = marker(:,400:end);
-                    % marker(:,deleter) = [];
-                end
-                %% Velocity
+                %% filter
                 marker_tmp = marker;
                 marker_tmp(isnan(marker_tmp)) = 0;
                 [b,ba] = butter(4,2/(Fs/2));
@@ -172,7 +98,6 @@ for idxPart = 17: 17%sizeArray(2)
             end  
  
             %calculate offset
-               % for j = 8: 8
                    for i = 1:size(out_fd,1)
                     if isempty(out_fd{i,idxPart})
                         continue
@@ -191,20 +116,10 @@ Height_of_Participant = table2array(Height(idxPart-7,1));
 for idxSegment = 1: length(Segment_Length)
     Segment_Length_adj(idxSegment) = Segment_Length(idxSegment)*Height_of_Participant(1,1);
 end
-%% 
 
-% CoM_UpArm = Segment_Length_adj(3) * CoM_Segment_p(3);
-% CoM_LoArm = Segment_Length_adj(4) * CoM_Segment_p(2);
-% CoM_Thigh = Segment_Length_adj(8) * CoM_Segment_p(6);
-% CoM_Shank = Segment_Length_adj(9) * CoM_Segment_p(5);
-% 
-% CoM_Hand = Segment_Length_adj(5) * CoM_Segment_p(1);
-% CoM_Foot = Segment_Length_adj(10) * CoM_Segment_p(4);
-% CoM_Pelvis = Segment_Length_adj(7) * CoM_Segment_p(7);
-% CoM_Trunk = Segment_Length_adj(6) * CoM_Segment_p(8);
 
 %%
-%sonderfall particioant 14
+%sonderfall participant 14
 sond_cond = 0;
 if(idxPart==14)
     sond_cond = 4;
@@ -453,12 +368,8 @@ if contains(list_of_names(idxTrial, idxPart), "baseline")
     V1 = CoM_Shank_l;
     V2 = CoM_Thigh_r;
     V3 = CoM_Thigh_l;
-    Knee_angle_r =[];
-    Knee_angle_l =[];
     V4 = CoM_Foot_r;
     V5 = CoM_Foot_l;
-    Foot_angle_r =[];
-    Foot_angle_l =[];
 
     for idx = 1:length(V0)
         Knee_angle_r(idx) = acosd(dot(V0(:,idx),V2(:,idx)) / (norm(V0(:,idx)) * norm(V2(:,idx))) );
@@ -472,6 +383,10 @@ if contains(list_of_names(idxTrial, idxPart), "baseline")
     for idx = 1:length(V1)
         Foot_angle_l(idx) = acosd(dot(V5(:,idx),V1(:,idx)) / (norm(V5(:,idx)) * norm(V1(:,idx))) );
     end
+    foot_angles_l = max(Foot_angle_l)-min(Foot_angle_l);
+    foot_angles_r = max(Foot_angle_r)-min(Foot_angle_r);
+    knee_angles_l = max(Knee_angle_l)-min(Knee_angle_l);
+    knee_angles_r = max(Knee_angle_r)-min(Knee_angle_r);
 else
     foot_middle(1,:) = ((skeleton(1,20,:) + skeleton(1,24,:))/2);
     foot_middle(2,:) = ((skeleton(2,20,:) + skeleton(2,24,:))/2);    
@@ -521,7 +436,6 @@ else
     
     % Erkennung der stabilen Start- und Endphasen
     stable_walking_start = find(euclid > 20);
-    
     stable_walking_end = find(velocity_CoM_filt(1:end-1) < 190 & diff(velocity_CoM_filt) < 0);
     
     
@@ -546,7 +460,6 @@ else
         % Finde den nächsten Startpunkt
         trial_start = stable_walking_start(1);
         
-       
         if  RHeel(1,trial_start) > 800 || trial_start > length(mean_acceleration_x)
             stable_walking_start(1) = []; % Entferne diesen Startpunkt
             continue;
@@ -555,6 +468,10 @@ else
             stable_walking_start(1) =[];
             continue;
         end
+        if(idxPart == 12 && idxTrial == 9 && RHeel(1, trial_start) > 500 ) 
+            stable_walking_start(1) =[];
+            continue;
+        end% sonderfall
          % Entferne Startpunkte, die vor dem letzten Endpunkt liegen oder zu
         % nah dran sind und nicht im Bereichder start force plates liegen
         if trial_start < last_end_idx + min_frames_between_starts  && ~isempty(trials)
@@ -579,8 +496,8 @@ else
             % Speichere den aktuellen Trial
             % **Endpunkt erweitern**:
             % Stelle sicher, dass wir nicht über die Datenlänge hinausgehen
-            if(idxPart==14 &&idxTrial==7 && trial_start==30929)
-                trial_start = 30685;
+            if(idxPart==14 &&idxTrial==7 && trial_start==31328)
+                trial_start = 31073;
             end
             if(idxPart==13 &&idxTrial==8 )
                 if( trial_start==19181)
@@ -592,6 +509,9 @@ else
                 if( trial_start==38964)
                     trial_start = 38786;
                 end
+            end
+            if(idxPart==12 &&idxTrial==8 && trial_start==25685)
+                trial_start = 25615;
             end
             if(idxPart==10 &&idxTrial==7 && trial_start==33949)
                 trial_start = 33805;
@@ -644,10 +564,10 @@ else
                 Foot_angle_l(idx) = acosd(dot(V5(:,idx),V1(:,idx)) / (norm(V5(:,idx)) * norm(V1(:,idx))) );
             end
 
-            foot_angles_l{start_idx} = Foot_angle_l;
-            foot_angles_r{start_idx} = Foot_angle_r;
-            knee_angles_l{start_idx} = Knee_angle_l;
-            knee_angles_r{start_idx} = Knee_angle_r;
+            foot_angles_l{start_idx} = max(Foot_angle_l)-min(Foot_angle_l);
+            foot_angles_r{start_idx} = max(Foot_angle_r)-min(Foot_angle_r);
+            knee_angles_l{start_idx} = max(Knee_angle_l)-min(Knee_angle_l);
+            knee_angles_r{start_idx} = max(Knee_angle_r)-min(Knee_angle_r);
 
             start_idx = start_idx + 1;
          % Aktualisiere den letzten Endpunkt
@@ -678,7 +598,7 @@ cond = list_of_names(idxTrial, idxPart);
 if(contains(cond, "baseline"))
     RHeel = [];
     LHeel = [];
-    min_frame_distance = 150; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
+    min_frame_distance = 200; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
     if(idxPart == 14)
         LHeel(1,:) = (markerset(117,:));
         LHeel(2,:) = (markerset(118,:));
@@ -696,24 +616,39 @@ if(contains(cond, "baseline"))
     end
     %% RHeel
     steps =[];
-    touchdowns = [];
+    touchdowns_r = [];
     start_value = RHeel(3,1);
-    if (idxPart == 14)
-        touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 11 && idxTrial == 2 || idxPart == 11 && idxTrial == 3)
-        touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 13 && idxTrial == 1)
-        touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 15 && idxTrial == 4)
-        touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
+    % Dynamische Anpassung der Prominenz
+    signal = RHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
+    start_value_r = signal(1);
+    
+    % Dynamische Prominenz basierend auf Signalbereich
+    signal_range = max(signal) - min(signal);
+    if( idxPart==14)
+          prominence_factor = 0.0075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
     else
-        touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        prominence_factor = 0.01; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
     end
-    touchdowns2 = touchdowns( touchdowns > 100 );
+    dynamic_prominence = signal_range * prominence_factor;
+
+    % Finde lokale Minima mit dynamischer Prominenz
+    touchdowns_r = find(islocalmin(signal, "MinProminence", dynamic_prominence));
+    % if (idxPart == 14)
+    %     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % elseif(idxPart == 11 && idxTrial == 2 || idxPart == 11 && idxTrial == 3)
+    %     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % elseif(idxPart == 13 && idxTrial == 1)
+    %     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % elseif(idxPart == 15 && idxTrial == 4)
+    %     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % else
+    %     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % end
+    touchdowns2 = touchdowns_r( touchdowns_r > 0 );
     filtered_tds_r = touchdowns2([true, diff(touchdowns2) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneinander haben
     steps{1} = RHeel(3,1: filtered_tds_r(1));
     for i = 2:length(filtered_tds_r)-1
@@ -730,44 +665,59 @@ if(contains(cond, "baseline"))
     steps_l =[];
     touchdowns_l = [];
     start_value_l = LHeel(3,1);
-    min_start_dist = 150;
-    if (idxPart == 9)
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 2.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif( idxPart == 14 && idxTrial == 3 || idxPart == 14 && idxTrial == 4  || idxPart == 14 && idxTrial == 5)
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 3.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 17 && idxTrial == 1 )
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 10 && idxTrial == 3 || idxPart == 12 && idxTrial == 3 )
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 15)
-        if(idxTrial==1 || idxTrial == 3)
-            touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-        elseif(idxTrial==4)
-            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-        elseif(idxTrial==5)
-            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2));
-            helpee = find(islocalmin(LHeel(3,:),"MinProminence",0.1));% finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-            touchdowns_l(end+1)= helpee(end);
-        else
-            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-        end
-        min_start_dist = 245;
-    elseif(idxPart == 16 && idxTrial == 4  )
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.95)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif (idxPart == 12 && idxTrial == 1 || idxPart == 16 && idxTrial == 5)
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 11 && idxTrial == 5 || idxPart == 12 && idxTrial == 4 )
-        touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
+    min_start_dist = 0;
+    % Dynamische Anpassung der Prominenz
+    signal = LHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
+    start_value_l = signal(1);
+    
+    % Dynamische Prominenz basierend auf Signalbereich
+    signal_range = max(signal) - min(signal);
+    if( idxPart==14)
+          prominence_factor = 0.0075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
     else
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        prominence_factor = 0.01; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
     end
+    dynamic_prominence = signal_range * prominence_factor;
+
+    % Finde lokale Minima mit dynamischer Prominenz
+    touchdowns_l = find(islocalmin(signal, "MinProminence", dynamic_prominence));
+    % if (idxPart == 9)
+    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 2.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % elseif( idxPart == 14 && idxTrial == 3 || idxPart == 14 && idxTrial == 4  || idxPart == 14 && idxTrial == 5)
+    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 3.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % elseif(idxPart == 17 && idxTrial == 1 )
+    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % elseif(idxPart == 10 && idxTrial == 3 || idxPart == 12 && idxTrial == 3 )
+    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % elseif(idxPart == 15)
+    %     if(idxTrial==1 || idxTrial == 3)
+    %         touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    %     elseif(idxTrial==4)
+    %         touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    %     elseif(idxTrial==5)
+    %         touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2));
+    %         helpee = find(islocalmin(LHeel(3,:),"MinProminence",0.1));% finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    %         touchdowns_l(end+1)= helpee(end);
+    %     else
+    %         touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    %     end
+    %     min_start_dist = 245;
+    % elseif(idxPart == 16 && idxTrial == 4  )
+    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.95)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % elseif (idxPart == 12 && idxTrial == 1 || idxPart == 16 && idxTrial == 5)
+    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % elseif(idxPart == 11 && idxTrial == 5 || idxPart == 12 && idxTrial == 4 )
+    %     touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % 
+    % else
+    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % end
 
     touchdowns2_l = touchdowns_l( touchdowns_l > min_start_dist ); %% mindestabstand zum startpunkt
     filtered_tds_l = touchdowns2_l([true, diff(touchdowns2_l) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneinander haben
@@ -776,38 +726,39 @@ if(contains(cond, "baseline"))
         steps_l{i} = LHeel(3,filtered_tds_l(i):filtered_tds_l(i+1)-1);
     end
 
-        figure;
-        plot(LHeel(3,:))
-        hold on
-        scatter(filtered_tds_l, LHeel(3,filtered_tds_l), "r", "filled")
-        title(["Left Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
-        disp(list_of_names(idxTrial, idxPart));
-    
+        % figure;
+        % plot(LHeel(3,:))
+        % hold on
+        % scatter(filtered_tds_l, LHeel(3,filtered_tds_l), "r", "filled")
+        % title(["Left Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
+        % disp(list_of_names(idxTrial, idxPart));
+
         % Schrittlängen berechnen
         step_lengths_l = diff(filtered_tds_l); % Differenz zwischen Touchdown-Indizes = Schrittlänge
         num_steps_l = length(step_lengths_l);   % Anzahl der Schritte im aktuellen Trial
         walking_distance = max(CoM(1,:)) - min(CoM(1,:));
-        disp("baseline: " + mean(velocity_CoM_filt));
         % Speichere die Ergebnisse
         results_l(idxPart).conditions(1).trials(idxTrial).numStrides = num_steps_l;
         results_l(idxPart).conditions(1).trials(idxTrial).strideLengths = step_lengths_l;
         results_l(idxPart).conditions(1).trials(idxTrial).meanStepLength = mean(step_lengths_l);
-        results_l(idxPart).conditions(1).trials(idxTrial).velocity = mean(velocity_CoM_filt);
+        results_l(idxPart).conditions(1).trials(idxTrial).velocity = velocity_CoM_filt;
         results_l(idxPart).conditions(1).trials(idxTrial).walkingDistance = walking_distance;
-        results_l(idxPart).conditions(1).trials(idxTrial).footAngle = Foot_angle_l;
-        results_l(idxPart).conditions(1).trials(idxTrial).kneeAngle = Knee_angle_l;
+        results_l(idxPart).conditions(1).trials(idxTrial).footAngle = foot_angles_l;
+        results_l(idxPart).conditions(1).trials(idxTrial).kneeAngle = knee_angles_l;
+       
 
-        step_lengths_r = diff(filtered_tds_r); % Differenz zwischen Touchdown-Indizes = Schrittlänge
+        step_lengths_r = diff(filtered_tds_r); % DFifferenz zwischen Touchdown-Indizes = Schrittlänge
         num_steps_r = length(step_lengths_r);   % Anzahl der Schritte im aktuellen Trial
         
         % Speichere die Ergebnisse
         results_r(idxPart).conditions(1).trials(idxTrial).numStrides = num_steps_r;
         results_r(idxPart).conditions(1).trials(idxTrial).strideLengths = step_lengths_r;
         results_r(idxPart).conditions(1).trials(idxTrial).meanStepLength = mean(step_lengths_r);
-        results_r(idxPart).conditions(1).trials(idxTrial).velocity = mean(velocity_CoM_filt);
+        results_r(idxPart).conditions(1).trials(idxTrial).velocity = velocity_CoM_filt;
         results_r(idxPart).conditions(1).trials(idxTrial).walkingDistance = walking_distance;
-        results_r(idxPart).conditions(1).trials(idxTrial).footAngle = Foot_angle_r;
-        results_r(idxPart).conditions(1).trials(idxTrial).kneeAngle = Knee_angle_r;
+        results_r(idxPart).conditions(1).trials(idxTrial).footAngle = foot_angles_r;
+        results_r(idxPart).conditions(1).trials(idxTrial).kneeAngle = knee_angles_r;
+        
     
 else
     for i=1 :length(trials_marker)
@@ -815,7 +766,7 @@ else
         marker_set = trials_marker{i};
         RHeel = [];
         LHeel = [];
-        min_frame_distance = 200; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
+        min_frame_distance = 100; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
         min_start_dist = 10; % mindestens abstand zum Start (soll gegen noise am Anfang helfen)
         n = 200; % Anzahl der letzten Frames, die geprüft werden
         m = 40; % Erweiterter Suchbereich bei fehlendem Minimum
@@ -918,7 +869,7 @@ else
         % title([" Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart), " Trial: ", i])
         % disp(list_of_names(idxTrial, idxPart));
 
-        %% Lheel
+        % %% Lheel
         steps_l = {};
         touchdowns_l = [];
 
@@ -1017,13 +968,14 @@ else
         velocity_CoM_results(velocity_CoM_results> 1300) =0;
         [d,da] = butter(4,fc/(Fs/2));
         velocity_CoM_results_f = filtfilt(d,da,velocity_CoM_results');
+        
         %disp(mean(velocity_CoM_results));
         %%
         % Speichere die Ergebnisse
         results_l(idxPart).conditions(idxTrial-4).trials(i).numStrides = num_steps_l;
         results_l(idxPart).conditions(idxTrial-4).trials(i).strideLengths = step_lengths_l;
         results_l(idxPart).conditions(idxTrial-4).trials(i).meanStepLength = mean(step_lengths_l);
-        results_l(idxPart).conditions(idxTrial -4).trials(i).velocity = mean(velocity_CoM_results_f);
+        results_l(idxPart).conditions(idxTrial -4).trials(i).velocity = velocity_CoM_results_f;
         results_l(idxPart).conditions(idxTrial -4).trials(i).walkingDistance = walking_distance;
         results_l(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_angles_l{1,i};
         results_l(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_angles_l{1,i};
@@ -1035,7 +987,7 @@ else
         results_r(idxPart).conditions(idxTrial-4).trials(i).numStrides = num_steps_r;
         results_r(idxPart).conditions(idxTrial-4).trials(i).strideLengths = step_lengths_r;
         results_r(idxPart).conditions(idxTrial-4).trials(i).meanStepLength = mean(step_lengths_r);
-        results_r(idxPart).conditions(idxTrial -4).trials(i).velocity = mean(velocity_CoM_results_f);
+        results_r(idxPart).conditions(idxTrial -4).trials(i).velocity = velocity_CoM_results_f;
         results_r(idxPart).conditions(idxTrial -4).trials(i).walkingDistance = walking_distance;
         results_r(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_angles_r{1,i};
         results_r(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_angles_r{1,i};
@@ -1046,38 +998,63 @@ end
 end
 
 %%
-num_trials = [5,9,9,9,9];
-save('step_analysis_results_l.mat', 'results_l');
-
-% Optionale Ausgabe als CSV
-results_table_l = [];
+% Combine results_l and results_r into a unified structure
+combined_results = struct();
+num_trials = [5,10,10,10,10];
+conditions = ["Baseline", "Large", "NoAvatar","Normal", "Small" ];
 for participant = 8:17
+    participant_name = sprintf('Participant%d', participant);
+    combined_results.(participant_name) = struct();
+    
     for condition = 1:5
+        condition_name = sprintf('Condition%d', condition);
+        combined_results.(participant_name).(condition_name) = struct();
+        if participant == 16 && condition == 5
+            num_trials = [5,10,10,10,9];
+        elseif participant == 14 && condition ==3
+            num_trials = [5,10,9,10,10];
+        else
+            num_trials = [5,10,10,10,10];
+        end
+        
         for trial = 1:num_trials(condition)
-            trial_data = results_l(participant).conditions(condition).trials(trial);
-            results_table_l = [results_table_l; participant, condition, trial, trial_data.numStrides, trial_data.meanStepLength, trial_data.velocity, mean(trial_data.footAngle), mean(trial_data.kneeAngle)];
+            % Left foot data
+            trial_data_l = results_l(participant).conditions(condition).trials(trial);
+            
+            % Right foot data
+            trial_data_r = results_r(participant).conditions(condition).trials(trial);
+            
+            % Combine data
+            trial_data_combined = struct();
+            trial_data_combined.numStrides_l = trial_data_l.numStrides;
+            trial_data_combined.strideLengths_l = trial_data_l.strideLengths;
+            trial_data_combined.walking_distance_l = trial_data_l.walkingDistance;
+            trial_data_combined.footAngle_l = trial_data_l.footAngle;
+            trial_data_combined.kneeAngle_l = trial_data_l.kneeAngle;
+            trial_data_combined.mean_velocity = mean(trial_data_r.velocity);
+            trial_data_combined.numStrides_r = trial_data_r.numStrides;
+            trial_data_combined.strideLengths_r = trial_data_r.strideLengths;
+            trial_data_combined.walking_distance_r = trial_data_r.walkingDistance;
+            trial_data_combined.footAngle_r = trial_data_r.footAngle;
+            trial_data_combined.kneeAngle_r = trial_data_r.kneeAngle;
+
+            trial_data_combined.velocity = trial_data_r.velocity;
+            
+            % Add to combined results
+            trial_name = sprintf('Trial%d', trial);
+            combined_results.(participant_name).(condition_name).(trial_name) = trial_data_combined;
         end
     end
 end
 
-% Speichern als CSV
-writematrix(results_table_l,'step_analysis_results_l.csv');
+% Save as JSON
+jsonText = jsonencode(combined_results, 'PrettyPrint', true);
+fileID = fopen('combined_step_analysis_results_with_arrays.json', 'w');
+fwrite(fileID, jsonText);
+fclose(fileID);
 
-save('step_analysis_results_r.mat', 'results_r');
+disp('Export with arrays as JSON completed.');
 
-% Optionale Ausgabe als CSV
-results_table_r = [];
-for participant = 8:17
-    for condition = 1:5
-        for trial = 1:num_trials(condition)
-            trial_data = results_r(participant).conditions(condition).trials(trial);
-            results_table_r = [results_table_r; participant, condition, trial, trial_data.numStrides, trial_data.meanStepLength, trial_data.velocity, mean(trial_data.footAngle), mean(trial_data.kneeAngle)];
-        end
-    end
-end
-
-% Speichern als CSV
-writematrix(results_table_r,'step_analysis_results_r.csv');
 %%
 clf
 plot(out_fd_off{33, 8}(:,4))
