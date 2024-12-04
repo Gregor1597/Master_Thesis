@@ -1,34 +1,6 @@
 % %% MT_GS x Biom
 % % Authors: MS, GS
 % % 28.10.2024
-% clc
-% clear all
-% 
-% dirData = uigetdir; % open the folder where the data of the participants is in
-% myFiles = dir(fullfile(dirData)); % creates
-% 
-% for idxParticipant = 8: 19 %length(myFiles) % starting at 3 because there are additional files in (at 1 and 2) we want to skip
-%     stopath = fullfile(myFiles(idxParticipant).folder,myFiles(idxParticipant).name); % this line creates the path (directory) to current participant
-%     directory = dir(stopath);
-%     for idxConditions = 1:length(dir(stopath))
-%             matFiles = dir(fullfile(stopath, directory(idxConditions).name, '*.mat')); % get all the files of that participant with extension _pos_global.sto
-%             txtFiles = dir(fullfile(stopath, directory(idxConditions).name, '*.txt'));
-%             for idxFile = 1 : length(matFiles)
-%                matfile = fullfile(matFiles(idxFile).folder, matFiles(idxFile).name); % get current file
-%                eval('a = importdata (matfile)');
-%                list_of_names{idxFile, idxParticipant-2} = matFiles(idxFile).name;
-%                out{idxFile, idxParticipant-2} = a.Trajectories.Labeled.Data;
-%                skelt_out{idxFile, idxParticipant-2} = a.Skeletons.PositionData;
-%             end
-%             for idxTxtFile = 1:length(txtFiles)
-%                txtFile = fullfile(txtFiles(idxTxtFile).folder, txtFiles(idxTxtFile).name); % get current file
-%                aa = readmatrix (txtFile);
-%                list_of_txt_names{idxTxtFile, idxParticipant-2} = txtFiles(idxTxtFile).name;
-%                out_fd{idxTxtFile, idxParticipant-2} = aa(18:end,:);
-%             end
-%     end
-% end
-% out_fd_off = out_fd; 
 %% Values for CoM
 
                 % Head Shoul UpArm LoArm Hand  Trunk PelvW Thigh Shank Foot
@@ -47,7 +19,9 @@ list_of_markers = {'C7'	'LSHO'	'RSHO'	'RBAK'	'CLAV'	'STRN'	'T10'	'SAC'	'RUPA'	'R
 Height = readtable("heights.csv");
 Weight = readtable("weights.csv");
 fc = 10;  
-Fs = 200;                             % Sampling Frequency (Hz)
+Fs = 200; 
+%%
+% Sampling Frequency (Hz)
 counter = 1;
 dt = 1 / 200; % Zeitintervall in Sekunden (200 Hz)
 for idxPart = 8: 17%sizeArray(2)
@@ -598,7 +572,7 @@ cond = list_of_names(idxTrial, idxPart);
 if(contains(cond, "baseline"))
     RHeel = [];
     LHeel = [];
-    min_frame_distance = 200; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
+    min_frame_distance = 140; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
     if(idxPart == 14)
         LHeel(1,:) = (markerset(117,:));
         LHeel(2,:) = (markerset(118,:));
@@ -624,119 +598,121 @@ if(contains(cond, "baseline"))
     
     % Dynamische Prominenz basierend auf Signalbereich
     signal_range = max(signal) - min(signal);
-    if( idxPart==14)
-          prominence_factor = 0.0075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-    else
-        prominence_factor = 0.01; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-    end
+    % if( idxPart==14)
+    %       prominence_factor = 0.0075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
+    % else
+    prominence_factor = 0.01; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
+    % end
     dynamic_prominence = signal_range * prominence_factor;
 
     % Finde lokale Minima mit dynamischer Prominenz
-    touchdowns_r = find(islocalmin(signal, "MinProminence", dynamic_prominence));
-    % if (idxPart == 14)
-    %     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % elseif(idxPart == 11 && idxTrial == 2 || idxPart == 11 && idxTrial == 3)
-    %     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % elseif(idxPart == 13 && idxTrial == 1)
-    %     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % elseif(idxPart == 15 && idxTrial == 4)
-    %     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % else
-    %     touchdowns = find(islocalmin(RHeel(3,:),"MinProminence",1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % end
+    %touchdowns_r = find(islocalmin(signal, "MinProminence", dynamic_prominence));
+    if (idxPart == 14)
+        touchdowns_r = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 11 && idxTrial == 2 || idxPart == 11 && idxTrial == 3)
+        touchdowns_r = find(islocalmin(RHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 13 && idxTrial == 1)
+        touchdowns_r = find(islocalmin(RHeel(3,:),"MinProminence",5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 15 && idxTrial == 4)
+        touchdowns_r = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    else
+        touchdowns_r = find(islocalmin(RHeel(3,:),"MinProminence",dynamic_prominence)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    end
     touchdowns2 = touchdowns_r( touchdowns_r > 0 );
     filtered_tds_r = touchdowns2([true, diff(touchdowns2) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneinander haben
-    steps{1} = RHeel(3,1: filtered_tds_r(1));
-    for i = 2:length(filtered_tds_r)-1
+    %steps{1} = RHeel(3,1: filtered_tds_r(1));
+    for i = 1:length(filtered_tds_r)-1
         steps{i} = RHeel(3,filtered_tds_r(i):filtered_tds_r(i+1)-1);
     end
-    % figure
-    % scatter(filtered_tds_r, RHeel(3,filtered_tds_r), "r", "filled")
-    % hold on
-    % plot(RHeel(3,:))
-    % title([" Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart) ])
-    % disp(list_of_names(idxTrial, idxPart));
+    figure
+    scatter(filtered_tds_r, RHeel(3,filtered_tds_r), "r", "filled")
+    hold on
+    plot(RHeel(3,:))
+    plot(diff(RHeel(1,:)))
+    title([" Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart) ])
+    disp(list_of_names(idxTrial, idxPart));
 
     %% Lheel
     steps_l =[];
     touchdowns_l = [];
     start_value_l = LHeel(3,1);
-    min_start_dist = 0;
+    min_start_dist = 70;
     % Dynamische Anpassung der Prominenz
     signal = LHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
     start_value_l = signal(1);
     
     % Dynamische Prominenz basierend auf Signalbereich
     signal_range = max(signal) - min(signal);
-    if( idxPart==14)
-          prominence_factor = 0.0075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-    else
-        prominence_factor = 0.01; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-    end
+    % if( idxPart==14)
+    %       prominence_factor = 0.0075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
+    % else
+    prominence_factor = 0.01; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
+    % end
     dynamic_prominence = signal_range * prominence_factor;
 
     % Finde lokale Minima mit dynamischer Prominenz
-    touchdowns_l = find(islocalmin(signal, "MinProminence", dynamic_prominence));
-    % if (idxPart == 9)
-    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 2.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % elseif( idxPart == 14 && idxTrial == 3 || idxPart == 14 && idxTrial == 4  || idxPart == 14 && idxTrial == 5)
-    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 3.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % elseif(idxPart == 17 && idxTrial == 1 )
-    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % elseif(idxPart == 10 && idxTrial == 3 || idxPart == 12 && idxTrial == 3 )
-    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % elseif(idxPart == 15)
-    %     if(idxTrial==1 || idxTrial == 3)
-    %         touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    %     elseif(idxTrial==4)
-    %         touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    %     elseif(idxTrial==5)
-    %         touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2));
-    %         helpee = find(islocalmin(LHeel(3,:),"MinProminence",0.1));% finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    %         touchdowns_l(end+1)= helpee(end);
-    %     else
-    %         touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    %     end
-    %     min_start_dist = 245;
-    % elseif(idxPart == 16 && idxTrial == 4  )
-    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.95)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % elseif (idxPart == 12 && idxTrial == 1 || idxPart == 16 && idxTrial == 5)
-    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % elseif(idxPart == 11 && idxTrial == 5 || idxPart == 12 && idxTrial == 4 )
-    %     touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % 
-    % else
-    %     touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-    % end
+    %touchdowns_l = find(islocalmin(signal, "MinProminence", dynamic_prominence));
+    if (idxPart == 9)
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 2.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif( idxPart == 14 && idxTrial == 3 || idxPart == 14 && idxTrial == 4  || idxPart == 14 && idxTrial == 5)
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 3.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 17 && idxTrial == 1 )
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 10 && idxTrial == 3 || idxPart == 12 && idxTrial == 3 )
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 15)
+        if(idxTrial==1 || idxTrial == 3)
+            touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        elseif(idxTrial==4)
+            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        elseif(idxTrial==5)
+            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2));
+            helpee = find(islocalmin(LHeel(3,:),"MinProminence",0.1));% finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+            touchdowns_l(end+1)= helpee(end);
+        else
+            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        end
+        min_start_dist = 245;
+    elseif(idxPart == 16 && idxTrial == 4  )
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.95)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif (idxPart == 12 && idxTrial == 1 || idxPart == 16 && idxTrial == 5)
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    elseif(idxPart == 11 && idxTrial == 5 || idxPart == 12 && idxTrial == 4 )
+        touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+
+    else
+        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",dynamic_prominence)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    end
 
     touchdowns2_l = touchdowns_l( touchdowns_l > min_start_dist ); %% mindestabstand zum startpunkt
     filtered_tds_l = touchdowns2_l([true, diff(touchdowns2_l) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneinander haben
-    steps_l{1} = LHeel(3,1: filtered_tds_l(1));
-    for i = 2:length(filtered_tds_l)-1
+    %steps_l{1} = LHeel(3,1: filtered_tds_l(1));
+    for i = 1:length(filtered_tds_l)-1
         steps_l{i} = LHeel(3,filtered_tds_l(i):filtered_tds_l(i+1)-1);
     end
 
-        % figure;
-        % plot(LHeel(3,:))
-        % hold on
-        % scatter(filtered_tds_l, LHeel(3,filtered_tds_l), "r", "filled")
-        % title(["Left Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
-        % disp(list_of_names(idxTrial, idxPart));
+        figure;
+        plot(LHeel(3,:))
+        hold on
+        plot(diff(LHeel(1,:)))
+        scatter(filtered_tds_l, LHeel(3,filtered_tds_l), "r", "filled")
+        title(["Left Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
+        disp(list_of_names(idxTrial, idxPart));
 
         % Schrittlängen berechnen
         step_lengths_l = diff(filtered_tds_l); % Differenz zwischen Touchdown-Indizes = Schrittlänge
         num_steps_l = length(step_lengths_l);   % Anzahl der Schritte im aktuellen Trial
-        walking_distance = max(CoM(1,:)) - min(CoM(1,:));
+        walking_distance = max(CoM(1,:)) - min(CoM(1,:));% sum(abs(diff(CoM(1,:))));
         % Speichere die Ergebnisse
         results_l(idxPart).conditions(1).trials(idxTrial).numStrides = num_steps_l;
         results_l(idxPart).conditions(1).trials(idxTrial).strideLengths = step_lengths_l;
@@ -858,8 +834,8 @@ else
         end
         % Schritte segmentieren
         
-        steps_r{1} = signal(1:filtered_tds_r(1));
-        for ii = 2:length(filtered_tds_r)-1
+       %steps_r{1} = signal(1:filtered_tds_r(1));
+        for ii = 1:length(filtered_tds_r)-1
             steps_r{ii} = signal(filtered_tds_r(ii):filtered_tds_r(ii+1)-1);
         end
         % figure
@@ -869,7 +845,7 @@ else
         % title([" Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart), " Trial: ", i])
         % disp(list_of_names(idxTrial, idxPart));
 
-        % %% Lheel
+        %% Lheel
         steps_l = {};
         touchdowns_l = [];
 
@@ -940,8 +916,8 @@ else
         end
         
         % Schritte segmentieren
-        steps_l{1} = signal(1:filtered_tds_l(1));
-        for j = 2:length(filtered_tds_l)-1
+        %steps_l{1} = signal(1:filtered_tds_l(1));
+        for j = 1:length(filtered_tds_l)-1
             steps_l{j} = signal(filtered_tds_l(j):filtered_tds_l(j+1)-1);
         end
         % figure;
@@ -963,7 +939,7 @@ else
          % Schrittlängen berechnen
         step_lengths_l = diff(filtered_tds_l); % Differenz zwischen Touchdown-Indizes = Schrittlänge
         num_steps_l = length(step_lengths_l);   % Anzahl der Schritte im aktuellen Trial
-        walking_distance = max(trials{1,i}(1,:)) - min(trials{1,i}(1,:));
+        walking_distance = max(CoM(1,:)) - min(CoM(1,:));%sum(abs(diff(CoM(1,:))));
         velocity_CoM_results = sqrt(diff(trials{1,i}(1,:)).^2 + diff(trials{1,i}(2,:)).^2) / dt;
         velocity_CoM_results(velocity_CoM_results> 1300) =0;
         [d,da] = butter(4,fc/(Fs/2));
