@@ -713,6 +713,9 @@ if(contains(cond, "baseline"))
         step_lengths_l = diff(filtered_tds_l); % Differenz zwischen Touchdown-Indizes = Schrittlänge
         num_steps_l = length(step_lengths_l);   % Anzahl der Schritte im aktuellen Trial
         walking_distance = max(CoM(1,:)) - min(CoM(1,:));% sum(abs(diff(CoM(1,:))));
+        HeelR_velocity = sqrt(diff(RHeel(1,:)).^2 + diff(RHeel(2,:)).^2 + diff(RHeel(3,:)).^2) ./ dt;
+        HeelL_velocity = sqrt(diff(LHeel(1,:)).^2 + diff(LHeel(2,:)).^2 + diff(LHeel(3,:)).^2) ./ dt;
+
         % Speichere die Ergebnisse
         results_l(idxPart).conditions(1).trials(idxTrial).numStrides = num_steps_l;
         results_l(idxPart).conditions(1).trials(idxTrial).strideLengths = step_lengths_l;
@@ -721,7 +724,8 @@ if(contains(cond, "baseline"))
         results_l(idxPart).conditions(1).trials(idxTrial).walkingDistance = walking_distance;
         results_l(idxPart).conditions(1).trials(idxTrial).footAngle = foot_angles_l;
         results_l(idxPart).conditions(1).trials(idxTrial).kneeAngle = knee_angles_l;
-       
+        results_l(idxPart).conditions(1).trials(idxTrial).HeelL_velocity = HeelL_velocity;
+
 
         step_lengths_r = diff(filtered_tds_r); % DFifferenz zwischen Touchdown-Indizes = Schrittlänge
         num_steps_r = length(step_lengths_r);   % Anzahl der Schritte im aktuellen Trial
@@ -734,7 +738,8 @@ if(contains(cond, "baseline"))
         results_r(idxPart).conditions(1).trials(idxTrial).walkingDistance = walking_distance;
         results_r(idxPart).conditions(1).trials(idxTrial).footAngle = foot_angles_r;
         results_r(idxPart).conditions(1).trials(idxTrial).kneeAngle = knee_angles_r;
-        
+        results_r(idxPart).conditions(1).trials(idxTrial).HeelR_velocity = HeelR_velocity;
+
     
 else
     for i=1 :length(trials_marker)
@@ -944,6 +949,8 @@ else
         velocity_CoM_results(velocity_CoM_results> 1300) =0;
         [d,da] = butter(4,fc/(Fs/2));
         velocity_CoM_results_f = filtfilt(d,da,velocity_CoM_results');
+        HeelR_velocity = sqrt(diff(RHeel(1,:)).^2 + diff(RHeel(2,:)).^2 + diff(RHeel(3,:)).^2) ./ dt;
+        HeelL_velocity = sqrt(diff(LHeel(1,:)).^2 + diff(LHeel(2,:)).^2 + diff(LHeel(3,:)).^2) ./ dt;
         
         %disp(mean(velocity_CoM_results));
         %%
@@ -955,6 +962,7 @@ else
         results_l(idxPart).conditions(idxTrial -4).trials(i).walkingDistance = walking_distance;
         results_l(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_angles_l{1,i};
         results_l(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_angles_l{1,i};
+        results_l(idxPart).conditions(idxTrial -4).trials(i).HeelL_velocity = HeelL_velocity;
         
         step_lengths_r = diff(filtered_tds_r); % Differenz zwischen Touchdown-Indizes = Schrittlänge
         num_steps_r = length(step_lengths_r);   % Anzahl der Schritte im aktuellen Trial
@@ -967,7 +975,7 @@ else
         results_r(idxPart).conditions(idxTrial -4).trials(i).walkingDistance = walking_distance;
         results_r(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_angles_r{1,i};
         results_r(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_angles_r{1,i};
-            
+        results_r(idxPart).conditions(idxTrial -4).trials(i).HeelR_velocity = HeelR_velocity;
     end
 end
     end
@@ -1013,6 +1021,8 @@ for participant = 8:17
             trial_data_combined.walking_distance_r = trial_data_r.walkingDistance;
             trial_data_combined.footAngle_r = trial_data_r.footAngle;
             trial_data_combined.kneeAngle_r = trial_data_r.kneeAngle;
+            trial_data_combined.HeelR_velocity = mean(trial_data_r.HeelR_velocity);
+            trial_data_combined.HeelL_velocity = mean(trial_data_l.HeelL_velocity);
 
             trial_data_combined.velocity = trial_data_r.velocity;
             
@@ -1031,12 +1041,12 @@ fclose(fileID);
 
 disp('Export with arrays as JSON completed.');
 
-%%
-clf
-plot(out_fd_off{33, 8}(:,4))
-hold on
-plot(out_fd_off{33, 8}(:,9))
-plot(out_fd_off{33, 8}(:,14))
-plot(out_fd_off{33, 8}(:,19))
-shg
+% %%
+% clf
+% plot(out_fd_off{33, 8}(:,4))
+% hold on
+% plot(out_fd_off{33, 8}(:,9))
+% plot(out_fd_off{33, 8}(:,14))
+% plot(out_fd_off{33, 8}(:,19))
+% shg
 
