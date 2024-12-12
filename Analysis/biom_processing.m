@@ -336,31 +336,6 @@ if contains(list_of_names(idxTrial, idxPart), "baseline")
     velocity_CoM(velocity_CoM> 1300) = 0;
     [c,ca] = butter(4,fc/(Fs/2));
     velocity_CoM_filt = filtfilt(c,ca,velocity_CoM');
-
-
-    V0 = CoM_Shank_r;
-    V1 = CoM_Shank_l;
-    V2 = CoM_Thigh_r;
-    V3 = CoM_Thigh_l;
-    V4 = CoM_Foot_r;
-    V5 = CoM_Foot_l;
-
-    for idx = 1:length(V0)
-        Knee_angle_r(idx) = acosd(dot(V0(:,idx),V2(:,idx)) / (norm(V0(:,idx)) * norm(V2(:,idx))) );
-    end
-    for idx = 1:length(V1)
-        Knee_angle_l(idx) = acosd(dot(V1(:,idx),V3(:,idx)) / (norm(V1(:,idx)) * norm(V3(:,idx))) );
-    end
-    for idx = 1:length(V0)
-        Foot_angle_r(idx) = acosd(dot(V4(:,idx),V0(:,idx)) / (norm(V4(:,idx)) * norm(V0(:,idx))) );
-    end
-    for idx = 1:length(V1)
-        Foot_angle_l(idx) = acosd(dot(V5(:,idx),V1(:,idx)) / (norm(V5(:,idx)) * norm(V1(:,idx))) );
-    end
-    foot_angles_l = max(Foot_angle_l)-min(Foot_angle_l);
-    foot_angles_r = max(Foot_angle_r)-min(Foot_angle_r);
-    knee_angles_l = max(Knee_angle_l)-min(Knee_angle_l);
-    knee_angles_r = max(Knee_angle_r)-min(Knee_angle_r);
 else
     foot_middle(1,:) = ((skeleton(1,20,:) + skeleton(1,24,:))/2);
     foot_middle(2,:) = ((skeleton(2,20,:) + skeleton(2,24,:))/2);    
@@ -422,6 +397,11 @@ else
     foot_angles_r ={};
     knee_angles_l ={};
     knee_angles_r ={};
+    foot_RoM_l =[];
+    foot_RoM_r =[];
+    knee_RoM_l =[];
+    knee_RoM_r =[];
+
     trials_marker = {};
     start_idx = 1;
     last_end_idx = 0; % Index des letzten Endpunktes
@@ -538,10 +518,10 @@ else
                 Foot_angle_l(idx) = acosd(dot(V5(:,idx),V1(:,idx)) / (norm(V5(:,idx)) * norm(V1(:,idx))) );
             end
 
-            foot_angles_l{start_idx} = max(Foot_angle_l)-min(Foot_angle_l);
-            foot_angles_r{start_idx} = max(Foot_angle_r)-min(Foot_angle_r);
-            knee_angles_l{start_idx} = max(Knee_angle_l)-min(Knee_angle_l);
-            knee_angles_r{start_idx} = max(Knee_angle_r)-min(Knee_angle_r);
+            foot_angles_l{start_idx} = Foot_angle_l;
+            foot_angles_r{start_idx} = Foot_angle_r;
+            knee_angles_l{start_idx} = Knee_angle_l;
+            knee_angles_r{start_idx} = Knee_angle_r;
 
             start_idx = start_idx + 1;
          % Aktualisiere den letzten Endpunkt
@@ -572,6 +552,10 @@ cond = list_of_names(idxTrial, idxPart);
 if(contains(cond, "baseline"))
     RHeel = [];
     LHeel = [];
+    foot_angles_l =[];
+    foot_angles_r =[];
+    knee_angles_l =[];
+    knee_angles_r =[];
     min_frame_distance = 140; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
     if(idxPart == 14)
         LHeel(1,:) = (markerset(117,:));
@@ -589,170 +573,186 @@ if(contains(cond, "baseline"))
         RHeel(3,:) = (markerset(147,:));
     end
     %% RHeel
-    steps =[];
-    touchdowns_r = [];
-    start_value = RHeel(3,1);
-    % Dynamische Anpassung der Prominenz
+    % steps =[];
+    % touchdowns_r = [];
+    % start_value = RHeel(3,1);
+    % % Dynamische Anpassung der Prominenz
     signal = RHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
-    start_value_r = signal(1);
+    [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height);
     
-    % Dynamische Prominenz basierend auf Signalbereich
-    signal_range = max(signal) - min(signal);
-    % if( idxPart==14)
-    %       prominence_factor = 0.0075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-    % else
-    prominence_factor = 0.01; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-    % end
-    dynamic_prominence = signal_range * prominence_factor;
+    search_range = 100;
 
-    % Finde lokale Minima mit dynamischer Prominenz
-    %touchdowns_r = find(islocalmin(signal, "MinProminence", dynamic_prominence));
-    if (idxPart == 14)
-        touchdowns_r = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % Speicher für Schnittpunkte
+    step_boundaries_r = []; % Start- und Endpunkte der Schritte
 
-    elseif(idxPart == 11 && idxTrial == 2 || idxPart == 11 && idxTrial == 3)
-        touchdowns_r = find(islocalmin(RHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    for ii = 1:length(max_indices)
+        max_idx = max_indices(ii);
 
-    elseif(idxPart == 13 && idxTrial == 1)
-        touchdowns_r = find(islocalmin(RHeel(3,:),"MinProminence",5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        % Suche linkes Minimum
+        left_range = max(1, max_idx - search_range):max_idx; % Bereich links vom Maximum
+        [left_min, left_idx] = min(signal(left_range));
+        left_idx = left_idx + left_range(1) - 1; % Absoluter Index
 
-    elseif(idxPart == 15 && idxTrial == 4)
-        touchdowns_r = find(islocalmin(RHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        % Suche rechtes Minimum
+        right_range = max_idx:min(length(signal), max_idx + search_range); % Bereich rechts vom Maximum
+        [right_min, right_idx] = min(signal(right_range));
+        right_idx = right_idx + right_range(1) - 1; % Absoluter Index
 
-    else
-        touchdowns_r = find(islocalmin(RHeel(3,:),"MinProminence",dynamic_prominence)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        % Speichere Schrittgrenzen
+        step_boundaries_r = [step_boundaries_r; left_idx, right_idx];
     end
-    touchdowns2 = touchdowns_r( touchdowns_r > 0 );
-    filtered_tds_r = touchdowns2([true, diff(touchdowns2) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneinander haben
-    %steps{1} = RHeel(3,1: filtered_tds_r(1));
-    for i = 1:length(filtered_tds_r)-1
-        steps{i} = RHeel(3,filtered_tds_r(i):filtered_tds_r(i+1)-1);
-    end
-    figure
-    scatter(filtered_tds_r, RHeel(3,filtered_tds_r), "r", "filled")
-    hold on
-    plot(RHeel(3,:))
-    plot(diff(RHeel(1,:)))
-    title([" Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart) ])
-    disp(list_of_names(idxTrial, idxPart));
 
-    %% Lheel
-    steps_l =[];
-    touchdowns_l = [];
-    start_value_l = LHeel(3,1);
-    min_start_dist = 70;
-    % Dynamische Anpassung der Prominenz
-    signal = LHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
-    start_value_l = signal(1);
-    
-    % Dynamische Prominenz basierend auf Signalbereich
-    signal_range = max(signal) - min(signal);
-    % if( idxPart==14)
-    %       prominence_factor = 0.0075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-    % else
-    prominence_factor = 0.01; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-    % end
-    dynamic_prominence = signal_range * prominence_factor;
+    % Minima visualisieren
+    % figure;
+    % plot(signal);
+    % hold on;
+    % plot(max_indices, maxima, 'ro'); % Maxima
+    % plot(step_boundaries_r(:, 1), signal(step_boundaries_r(:, 1)), 'go'); % Linke Minima
+    % plot(step_boundaries_r(:, 2), signal(step_boundaries_r(:, 2)), 'mo'); % Rechte Minima
+    % title(["Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart), " Trial: ", i])
+    % xlabel('Frame');
+    % ylabel('Amplitude');
+    % hold off;
 
-    % Finde lokale Minima mit dynamischer Prominenz
-    %touchdowns_l = find(islocalmin(signal, "MinProminence", dynamic_prominence));
-    if (idxPart == 9)
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 2.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    % Schritte extrahieren
+    steps_r = cell(size(step_boundaries_r, 1), 1);
 
-    elseif( idxPart == 14 && idxTrial == 3 || idxPart == 14 && idxTrial == 4  || idxPart == 14 && idxTrial == 5)
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence", 3.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 17 && idxTrial == 1 )
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 10 && idxTrial == 3 || idxPart == 12 && idxTrial == 3 )
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.5)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 15)
-        if(idxTrial==1 || idxTrial == 3)
-            touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-        elseif(idxTrial==4)
-            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-        elseif(idxTrial==5)
-            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.2));
-            helpee = find(islocalmin(LHeel(3,:),"MinProminence",0.1));% finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-            touchdowns_l(end+1)= helpee(end);
-        else
-            touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.1)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+    for ii = 1:size(step_boundaries_r, 1)
+        step_start = step_boundaries_r(ii, 1);
+        step_end = step_boundaries_r(ii, 2);
+        steps_r{ii} = signal(step_start:step_end);
+        %Range of Motion
+        V0 = CoM_Shank_r(start_idx:end_idx);
+        V2 = CoM_Thigh_r(start_idx:end_idx);
+        V4 = CoM_Foot_r(start_idx:end_idx);
+        Knee_angle_r =[];
+        Foot_angle_r =[];
+        for idx = 1:length(V0)
+            Knee_angle_r(idx) = acosd(dot(V0(:,idx),V2(:,idx)) / (norm(V0(:,idx)) * norm(V2(:,idx))) );
         end
-        min_start_dist = 245;
-    elseif(idxPart == 16 && idxTrial == 4  )
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.95)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif (idxPart == 12 && idxTrial == 1 || idxPart == 16 && idxTrial == 5)
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",0.3)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    elseif(idxPart == 11 && idxTrial == 5 || idxPart == 12 && idxTrial == 4 )
-        touchdowns_l = find(islocalmin(LHeel(3,:))); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
-
-    else
-        touchdowns_l = find(islocalmin(LHeel(3,:),"MinProminence",dynamic_prominence)); % finde alle lokalen minima mit notfalls indviduell angepasster Prominenz
+        for idx = 1:length(V0)
+            Foot_angle_r(idx) = acosd(dot(V4(:,idx),V0(:,idx)) / (norm(V4(:,idx)) * norm(V0(:,idx))) );
+        end
+        foot_angles_r(ii) = max(Foot_angle_r)-min(Foot_angle_r);
+        knee_angles_r(ii) = max(Knee_angle_r)-min(Knee_angle_r);
     end
-
-    touchdowns2_l = touchdowns_l( touchdowns_l > min_start_dist ); %% mindestabstand zum startpunkt
-    filtered_tds_l = touchdowns2_l([true, diff(touchdowns2_l) > min_frame_distance]); % filter alle Touchdownpunkte, die den mindestabstand voneinander haben
-    %steps_l{1} = LHeel(3,1: filtered_tds_l(1));
-    for i = 1:length(filtered_tds_l)-1
-        steps_l{i} = LHeel(3,filtered_tds_l(i):filtered_tds_l(i+1)-1);
-    end
-
-        figure;
-        plot(LHeel(3,:))
-        hold on
-        plot(diff(LHeel(1,:)))
-        scatter(filtered_tds_l, LHeel(3,filtered_tds_l), "r", "filled")
-        title(["Left Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart)])
-        disp(list_of_names(idxTrial, idxPart));
-
-        % Schrittlängen berechnen
-        step_lengths_l = diff(filtered_tds_l); % Differenz zwischen Touchdown-Indizes = Schrittlänge
-        num_steps_l = length(step_lengths_l);   % Anzahl der Schritte im aktuellen Trial
-        walking_distance = max(CoM(1,:)) - min(CoM(1,:));% sum(abs(diff(CoM(1,:))));
-        HeelR_velocity = sqrt(diff(RHeel(1,:)).^2 + diff(RHeel(2,:)).^2 + diff(RHeel(3,:)).^2) ./ dt;
-        HeelL_velocity = sqrt(diff(LHeel(1,:)).^2 + diff(LHeel(2,:)).^2 + diff(LHeel(3,:)).^2) ./ dt;
-
-        % Speichere die Ergebnisse
-        results_l(idxPart).conditions(1).trials(idxTrial).numStrides = num_steps_l;
-        results_l(idxPart).conditions(1).trials(idxTrial).strideLengths = step_lengths_l;
-        results_l(idxPart).conditions(1).trials(idxTrial).meanStepLength = mean(step_lengths_l);
-        results_l(idxPart).conditions(1).trials(idxTrial).velocity = velocity_CoM_filt;
-        results_l(idxPart).conditions(1).trials(idxTrial).walkingDistance = walking_distance;
-        results_l(idxPart).conditions(1).trials(idxTrial).footAngle = foot_angles_l;
-        results_l(idxPart).conditions(1).trials(idxTrial).kneeAngle = knee_angles_l;
-        results_l(idxPart).conditions(1).trials(idxTrial).HeelL_velocity = HeelL_velocity;
-
-
-        step_lengths_r = diff(filtered_tds_r); % DFifferenz zwischen Touchdown-Indizes = Schrittlänge
-        num_steps_r = length(step_lengths_r);   % Anzahl der Schritte im aktuellen Trial
-        
-        % Speichere die Ergebnisse
-        results_r(idxPart).conditions(1).trials(idxTrial).numStrides = num_steps_r;
-        results_r(idxPart).conditions(1).trials(idxTrial).strideLengths = step_lengths_r;
-        results_r(idxPart).conditions(1).trials(idxTrial).meanStepLength = mean(step_lengths_r);
-        results_r(idxPart).conditions(1).trials(idxTrial).velocity = velocity_CoM_filt;
-        results_r(idxPart).conditions(1).trials(idxTrial).walkingDistance = walking_distance;
-        results_r(idxPart).conditions(1).trials(idxTrial).footAngle = foot_angles_r;
-        results_r(idxPart).conditions(1).trials(idxTrial).kneeAngle = knee_angles_r;
-        results_r(idxPart).conditions(1).trials(idxTrial).HeelR_velocity = HeelR_velocity;
-
+    %% Lheel
+    % steps_l =[];
+    % touchdowns_l = [];
+    % start_value_l = LHeel(3,1);
+    % min_start_dist = 70;
+    % % Dynamische Anpassung der Prominenz
+    signal = LHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
+    [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height);
     
-else
+    search_range = 100;
+
+    % Speicher für Schnittpunkte
+    step_boundaries_l = []; % Start- und Endpunkte der Schritte
+
+    for ii = 1:length(max_indices)
+        max_idx = max_indices(ii);
+
+        % Suche linkes Minimum
+        left_range = max(1, max_idx - search_range):max_idx; % Bereich links vom Maximum
+        [left_min, left_idx] = min(signal(left_range));
+        left_idx = left_idx + left_range(1) - 1; % Absoluter Index
+
+        % Suche rechtes Minimum
+        right_range = max_idx:min(length(signal), max_idx + search_range); % Bereich rechts vom Maximum
+        [right_min, right_idx] = min(signal(right_range));
+        right_idx = right_idx + right_range(1) - 1; % Absoluter Index
+
+        % Speichere Schrittgrenzen
+        step_boundaries_l = [step_boundaries_l; left_idx, right_idx];
+    end
+
+    % Schritte extrahieren
+    steps_l = cell(size(step_boundaries_l, 1), 1);
+
+    for ii = 1:size(step_boundaries_l, 1)
+        step_start = step_boundaries_l(ii, 1);
+        step_end = step_boundaries_l(ii, 2);
+        steps_l{ii} = signal(step_start:step_end);
+    end
+    % Schrittlängen berechnen
+    num_steps_l = size(step_boundaries_l,1);   % Anzahl der Schritte im aktuellen Trial
+    step_lengths_l = zeros(num_steps_l, 1);
+
+    % Berechnung der Schrittlänge für jeden Schritt
+    for ii = 1:num_steps_l
+        start_idx = step_boundaries_l(ii, 1); % Linkes Minimum (Start des Schritts)
+        end_idx = step_boundaries_l(ii, 2);   % Rechtes Minimum (Ende des Schritts)
+
+        % Schrittlänge berechnen (Differenz der x-Koordinaten)
+        step_lengths_l(ii) = abs(LHeel(1,end_idx) - LHeel(1,start_idx));
+        %Range of Motion
+        V0 = CoM_Shank_l(start_idx:end_idx);
+        V2 = CoM_Thigh_l(start_idx:end_idx);
+        V4 = CoM_Foot_l(start_idx:end_idx);
+        Knee_angle_l =[];
+        Foot_angle_l =[];
+        for idx = 1:length(V0)
+            Knee_angle_l(idx) = acosd(dot(V0(:,idx),V2(:,idx)) / (norm(V0(:,idx)) * norm(V2(:,idx))) );
+        end
+        for idx = 1:length(V0)
+            Foot_angle_l(idx) = acosd(dot(V4(:,idx),V0(:,idx)) / (norm(V4(:,idx)) * norm(V0(:,idx))) );
+        end
+        foot_angles_l(ii) = max(Foot_angle_l)-min(Foot_angle_l);
+        knee_angles_l(ii) = max(Knee_angle_l)-min(Knee_angle_l);
+    end
+    
+    walking_distance = max(CoM(1,:)) - min(CoM(1,:));% sum(abs(diff(CoM(1,:))));
+    HeelR_velocity = sqrt(diff(RHeel(1,:)).^2 + diff(RHeel(2,:)).^2 + diff(RHeel(3,:)).^2) ./ dt;
+    HeelL_velocity = sqrt(diff(LHeel(1,:)).^2 + diff(LHeel(2,:)).^2 + diff(LHeel(3,:)).^2) ./ dt;
+
+    % Speichere die Ergebnisse
+    results_l(idxPart).conditions(1).trials(idxTrial).numStrides = num_steps_l;
+    results_l(idxPart).conditions(1).trials(idxTrial).strideLengths = step_lengths_l;
+    results_l(idxPart).conditions(1).trials(idxTrial).meanStepLength = mean(step_lengths_l);
+    results_l(idxPart).conditions(1).trials(idxTrial).velocity = velocity_CoM_filt;
+    results_l(idxPart).conditions(1).trials(idxTrial).walkingDistance = walking_distance;
+    results_l(idxPart).conditions(1).trials(idxTrial).footAngle = foot_angles_l;
+    results_l(idxPart).conditions(1).trials(idxTrial).kneeAngle = knee_angles_l;
+    results_l(idxPart).conditions(1).trials(idxTrial).HeelL_velocity = HeelL_velocity;
+
+    num_steps_r = size(step_boundaries_r,1);   % Anzahl der Schritte im aktuellen Trial
+    step_lengths_r = zeros(num_steps_r, 1);
+
+    % Berechnung der Schrittlänge für jeden Schritt
+    for ii = 1:num_steps_r
+        start_idx = step_boundaries_r(ii, 1); % Linkes Minimum (Start des Schritts)
+        end_idx = step_boundaries_r(ii, 2);   % Rechtes Minimum (Ende des Schritts)
+
+        % Schrittlänge berechnen (Differenz der x-Koordinaten)
+        step_lengths_r(ii) = abs(RHeel(1,end_idx) - RHeel(1,start_idx));
+    end
+
+    % Speichere die Ergebnisse
+    results_r(idxPart).conditions(1).trials(idxTrial).numStrides = num_steps_r;
+    results_r(idxPart).conditions(1).trials(idxTrial).strideLengths = step_lengths_r;
+    results_r(idxPart).conditions(1).trials(idxTrial).meanStepLength = mean(step_lengths_r);
+    results_r(idxPart).conditions(1).trials(idxTrial).velocity = velocity_CoM_filt;
+    results_r(idxPart).conditions(1).trials(idxTrial).walkingDistance = walking_distance;
+    results_r(idxPart).conditions(1).trials(idxTrial).footAngle = foot_angles_r;
+    results_r(idxPart).conditions(1).trials(idxTrial).kneeAngle = knee_angles_r;
+    results_r(idxPart).conditions(1).trials(idxTrial).HeelR_velocity = HeelR_velocity;
+
+
+else %not baseline
     for i=1 :length(trials_marker)
         %%
         marker_set = trials_marker{i};
         RHeel = [];
         LHeel = [];
-        min_frame_distance = 100; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
+        min_frame_distance = 125; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
         min_start_dist = 10; % mindestens abstand zum Start (soll gegen noise am Anfang helfen)
+        min_peak_height = 150; % Mindesthöhe für Maxima
         n = 200; % Anzahl der letzten Frames, die geprüft werden
         m = 40; % Erweiterter Suchbereich bei fehlendem Minimum
         threshold = 5; % Toleranzbereich um das Minimum (z. B. in mm)
         if(idxPart == 14)
+            prominence_factor = 0.0075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
             LHeel(1,:) = (marker_set(117,:));
             LHeel(2,:) = (marker_set(118,:));
             LHeel(3,:) = (marker_set(119,:));
@@ -760,6 +760,7 @@ else
             RHeel(2,:) = (marker_set(142,:));
             RHeel(3,:) = (marker_set(143,:));
         else
+            prominence_factor = 0.03; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
             LHeel(1,:) = (marker_set(121,:));
             LHeel(2,:) = (marker_set(122,:));
             LHeel(3,:) = (marker_set(123,:));
@@ -768,182 +769,139 @@ else
             RHeel(3,:) = (marker_set(147,:));
         end
         %% RHeel
-        steps_r = {};
-        touchdowns_r = [];
-
-        % Dynamische Anpassung der Prominenz
+        %  steps_r = {};
+        %  touchdowns_r = [];
+        %
+        %  % Dynamische Anpassung der Prominenz
         signal = RHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
-        start_value_r = signal(1);
-        
-        % Dynamische Prominenz basierend auf Signalbereich
-        signal_range = max(signal) - min(signal);
-        if( idxPart==14)
-              prominence_factor = 0.075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-        else
-            prominence_factor = 0.1; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
+
+        [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height);
+
+        % Reichweite für Suche nach Minima (z. B. 100 Frames nach links und rechts)
+        search_range = 100;
+
+        % Speicher für Schnittpunkte
+        step_boundaries_r = []; % Start- und Endpunkte der Schritte
+
+        for ii = 1:length(max_indices)
+            max_idx = max_indices(ii);
+
+            % Suche linkes Minimum
+            left_range = max(1, max_idx - search_range):max_idx; % Bereich links vom Maximum
+            [left_min, left_idx] = min(signal(left_range));
+            left_idx = left_idx + left_range(1) - 1; % Absoluter Index
+
+            % Suche rechtes Minimum
+            right_range = max_idx:min(length(signal), max_idx + search_range); % Bereich rechts vom Maximum
+            [right_min, right_idx] = min(signal(right_range));
+            right_idx = right_idx + right_range(1) - 1; % Absoluter Index
+  
+            % Speichere Schrittgrenzen
+            step_boundaries_r = [step_boundaries_r; left_idx, right_idx];
         end
-        dynamic_prominence = signal_range * prominence_factor;
 
-        % Finde lokale Minima mit dynamischer Prominenz
-        touchdowns_r = find(islocalmin(signal, "MinProminence", dynamic_prominence));
-
-        % Filter Touchdowns mit Mindestabstand zum Start
-        touchdowns2_r = touchdowns_r(touchdowns_r > min_start_dist);
-
-        % Filter Touchdowns mit Mindestabstand zwischen den Punkten
-        filtered_tds_r = touchdowns2_r([true, diff(touchdowns2_r) > min_frame_distance]);
-        
-        % Überprüfen des Endpunkts
-        
-        % Bereich für die letzten n Frames des Signals
-        last_n_frames = signal(end-n+1:end);
-        
-        % Minimum und Toleranzbereich in den letzten n Frames
-        min_last_n = min(last_n_frames);
-        lower_bound = min_last_n - threshold;
-        upper_bound = min_last_n + threshold;
-        
-        % Finde Kandidatenpunkte in den letzten n Frames innerhalb des Bereichs
-        candidates = find(last_n_frames >= lower_bound & last_n_frames <= upper_bound);
-        
-        if ~isempty(candidates)
-            % Wähle den frühesten bzw niedrigsten Punkt (relativ zum Ende des Signals)
-            candidate_index = find(last_n_frames == min(last_n_frames(candidates)));
-            global_index = length(signal) - n + candidate_index; % Absoluter Index im Signal
-
-            % Prüfe Mindestabstand zum letzten Touchdown
-            if global_index - filtered_tds_r(end) > min_frame_distance
-                filtered_tds_r = [filtered_tds_r, global_index]; % Hinzufügen des neuen Touchdowns
-            else
-                % Fallback: Erweiterten Bereich prüfen (m Frames)
-                last_m_frames = signal(max(1, end-m+1):end); % Sicherstellen, dass Index nicht negativ wird
-                [min_val, min_idx] = min(last_m_frames); % Minimum im erweiterten Bereich
-                global_index = max(1, length(signal) - m + min_idx); % Absoluter Index im Signal
-                %disp(global_index);
-                % Prüfe Mindestabstand und füge den niedrigsten Punkt hinzu
-                if global_index - filtered_tds_r(end) > min_frame_distance
-                    filtered_tds_r = [filtered_tds_r, global_index];
-                end
-
-            end
-        else
-            %Fallback: Erweiterten Bereich prüfen (m Frames)
-            last_m_frames = signal(max(1, end-m+1):end); % Sicherstellen, dass Index nicht negativ wird
-            [min_val, min_idx] = min(last_m_frames); % Minimum im erweiterten Bereich
-            global_index = max(1, length(signal) - m + min_idx); % Absoluter Index im Signal
-            %disp(global_index);
-            % Prüfe Mindestabstand und füge den niedrigsten Punkt hinzu
-            if global_index - filtered_tds_r(end) > min_frame_distance
-                filtered_tds_r = [filtered_tds_r, global_index];
-            end
-        end
-        % Schritte segmentieren
-        
-       %steps_r{1} = signal(1:filtered_tds_r(1));
-        for ii = 1:length(filtered_tds_r)-1
-            steps_r{ii} = signal(filtered_tds_r(ii):filtered_tds_r(ii+1)-1);
-        end
-        % figure
-        % scatter(filtered_tds_r, RHeel(3,filtered_tds_r), "r", "filled")
-        % hold on
-        % plot(RHeel(3,:))
-        % title([" Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart), " Trial: ", i])
-        % disp(list_of_names(idxTrial, idxPart));
-
-        %% Lheel
-        steps_l = {};
-        touchdowns_l = [];
-
-        % Dynamische Anpassung der Prominenz
-        signal = LHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
-        start_value_l = signal(1);
-
-        % Dynamische Prominenz basierend auf Signalbereich
-        signal_range = max(signal) - min(signal);
-        if(idxPart==14)
-              prominence_factor = 0.075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-        else
-            prominence_factor = 0.1; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-        end
-        dynamic_prominence = signal_range * prominence_factor;
-
-        % Finde lokale Minima mit dynamischer Prominenz
-        touchdowns_l = find(islocalmin(signal, "MinProminence", dynamic_prominence));
-
-        % Filter Touchdowns mit Mindestabstand zum Start
-        touchdowns2_l = touchdowns_l(touchdowns_l > min_start_dist);
-
-        % Filter Touchdowns mit Mindestabstand zwischen den Punkten
-        filtered_tds_l = touchdowns2_l([true, diff(touchdowns2_l) > min_frame_distance]);
-        
-        % Überprüfen des Endpunkts
-        % Bereich für die letzten n Frames des Signals
-        last_n_frames = signal(end-n+1:end);
-        
-        % Minimum und Toleranzbereich in den letzten n Frames
-        min_last_n = min(last_n_frames);
-        lower_bound = min_last_n - threshold;
-        upper_bound = min_last_n + threshold;
-        
-        % Finde Kandidatenpunkte in den letzten n Frames innerhalb des Bereichs
-        candidates = find(last_n_frames >= lower_bound & last_n_frames <= upper_bound);
-        
-        if ~isempty(candidates)
-            % Wähle den frühesten bzw niedrigsten Punkt (relativ zum Ende des Signals)
-            candidate_index = find(last_n_frames == min(last_n_frames(candidates)));
-            global_index = length(signal) - n + candidate_index; % Absoluter Index im Signal
-
-            % Prüfe Mindestabstand zum letzten Touchdown
-            if global_index - filtered_tds_l(end) > min_frame_distance
-                filtered_tds_l = [filtered_tds_l, global_index]; % Hinzufügen des neuen Touchdowns
-            else
-                % Fallback: Erweiterten Bereich prüfen (m Frames)
-                last_m_frames = signal(max(1, end-m+1):end); % Sicherstellen, dass Index nicht negativ wird
-                [min_val, min_idx] = min(last_m_frames); % Minimum im erweiterten Bereich
-                global_index = max(1, length(signal) - m + min_idx); % Absoluter Index im Signal
-                %disp(global_index);
-                % Prüfe Mindestabstand und füge den niedrigsten Punkt hinzu
-                if global_index - filtered_tds_l(end) > min_frame_distance
-                    filtered_tds_l = [filtered_tds_l, global_index];
-                end
-       
-            end
-        else
-            % Fallback: Erweiterten Bereich prüfen (m Frames)
-            last_m_frames = signal(max(1, end-m+1):end); % Sicherstellen, dass Index nicht negativ wird
-            [min_val, min_idx] = min(last_m_frames); % Minimum im erweiterten Bereich
-            global_index = max(1, length(signal) - m + min_idx); % Absoluter Index im Signal
-            %disp(global_index);
-            % Prüfe Mindestabstand und füge den niedrigsten Punkt hinzu
-            if global_index - filtered_tds_l(end) > min_frame_distance
-                filtered_tds_l = [filtered_tds_l, global_index];
-            end
-        end
-        
-        % Schritte segmentieren
-        %steps_l{1} = signal(1:filtered_tds_l(1));
-        for j = 1:length(filtered_tds_l)-1
-            steps_l{j} = signal(filtered_tds_l(j):filtered_tds_l(j+1)-1);
-        end
+        % Minima visualisieren
         % figure;
-        % plot(LHeel(3,:))
-        % hold on
-        % scatter(filtered_tds_l, LHeel(3,filtered_tds_l), "r", "filled")
+        % plot(signal);
+        % hold on;
+        % plot(max_indices, maxima, 'ro'); % Maxima
+        % plot(step_boundaries_r(:, 1), signal(step_boundaries_r(:, 1)), 'go'); % Linke Minima
+        % plot(step_boundaries_r(:, 2), signal(step_boundaries_r(:, 2)), 'mo'); % Rechte Minima
+        % title(["Right Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart), " Trial: ", i])
+        % xlabel('Frame');
+        % ylabel('Amplitude');
+        % hold off;
+
+        % Schritte extrahieren
+        steps_r = cell(size(step_boundaries_r, 1), 1);
+
+        for ii = 1:size(step_boundaries_r, 1)
+            step_start = step_boundaries_r(ii, 1);
+            step_end = step_boundaries_r(ii, 2);
+            steps_r{ii} = signal(step_start:step_end);
+           
+        end
+
+        
+        %% Lheel
+        % steps_l = {};
+        % touchdowns_l = [];
+        %
+        % % Dynamische Anpassung der Prominenz
+        signal = LHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
+
+        [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height);
+
+        % Maxima visualisieren
+        % figure;
+        % plot(signal);
+        % hold on;
+        % plot(max_indices, maxima, 'ro'); % Maxima markieren
         % title(["Left Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart), " Trial: ", i])
-        % disp(list_of_names(idxTrial, idxPart));
+        % xlabel('Frame');
+        % ylabel('Amplitude');
+        % hold off;
+        % Reichweite für Suche nach Minima (z. B. 100 Frames nach links und rechts)
+        search_range = 100;
 
-        if(idxPart==17 && idxTrial == 6 && i == 7)
-            steps_r(1) = [];
+        % Speicher für Schnittpunkte
+        step_boundaries_l = []; % Start- und Endpunkte der Schritte
+
+        for ii = 1:length(max_indices)
+            max_idx = max_indices(ii);
+
+            % Suche linkes Minimum
+            left_range = max(1, max_idx - search_range):max_idx; % Bereich links vom Maximum
+            [left_min, left_idx] = min(signal(left_range));
+            left_idx = left_idx + left_range(1) - 1; % Absoluter Index
+
+            % Suche rechtes Minimum
+            right_range = max_idx:min(length(signal), max_idx + search_range); % Bereich rechts vom Maximum
+            [right_min, right_idx] = min(signal(right_range));
+            right_idx = right_idx + right_range(1) - 1; % Absoluter Index
+
+            % Speichere Schrittgrenzen
+            step_boundaries_l = [step_boundaries_l; left_idx, right_idx];
         end
 
-        if(idxPart==17 && idxTrial == 6 && i == 10)
-            steps_l(1) = [];
+        % Minima visualisieren
+        % figure;
+        % plot(signal);
+        % hold on;
+        % plot(max_indices, maxima, 'ro'); % Maxima
+        % plot(step_boundaries_l(:, 1), signal(step_boundaries_l(:, 1)), 'go'); % Linke Minima
+        % plot(step_boundaries_l(:, 2), signal(step_boundaries_l(:, 2)), 'mo'); % Rechte Minima
+        % title(["Left Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart), " Trial: ", i])
+        % xlabel('Frame');
+        % ylabel('Amplitude');
+        % hold off;
+
+        % Schritte extrahieren
+        steps_l = cell(size(step_boundaries_l, 1), 1);
+
+        for ii = 1:size(step_boundaries_l, 1)
+            step_start = step_boundaries_l(ii, 1);
+            step_end = step_boundaries_l(ii, 2);
+            steps_l{ii} = signal(step_start:step_end);
         end
+        
 
-
+%%
          % Schrittlängen berechnen
-        step_lengths_l = diff(filtered_tds_l); % Differenz zwischen Touchdown-Indizes = Schrittlänge
-        num_steps_l = length(step_lengths_l);   % Anzahl der Schritte im aktuellen Trial
+        
+        num_steps_l = size(step_boundaries_l,1);   % Anzahl der Schritte im aktuellen Trial
+        step_lengths_l = zeros(num_steps_l, 1);
+
+        % Berechnung der Schrittlänge für jeden Schritt
+        for ii = 1:num_steps_l
+            start_idx = step_boundaries_l(ii, 1); % Linkes Minimum (Start des Schritts)
+            end_idx = step_boundaries_l(ii, 2);   % Rechtes Minimum (Ende des Schritts)
+
+            % Schrittlänge berechnen (Differenz der x-Koordinaten)
+            step_lengths_l(ii) = abs(LHeel(1,end_idx) - LHeel(1,start_idx));
+            foot_RoM_l(ii) = max(foot_angles_l{i}(start_idx:end_idx))-min(foot_angles_l{i}(start_idx:end_idx));
+            knee_RoM_l(ii) = max(knee_angles_l{i}(start_idx:end_idx))-min(knee_angles_l{i}(start_idx:end_idx));
+        end
         walking_distance = max(CoM(1,:)) - min(CoM(1,:));%sum(abs(diff(CoM(1,:))));
         velocity_CoM_results = sqrt(diff(trials{1,i}(1,:)).^2 + diff(trials{1,i}(2,:)).^2) / dt;
         velocity_CoM_results(velocity_CoM_results> 1300) =0;
@@ -960,21 +918,34 @@ else
         results_l(idxPart).conditions(idxTrial-4).trials(i).meanStepLength = mean(step_lengths_l);
         results_l(idxPart).conditions(idxTrial -4).trials(i).velocity = velocity_CoM_results_f;
         results_l(idxPart).conditions(idxTrial -4).trials(i).walkingDistance = walking_distance;
-        results_l(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_angles_l{1,i};
-        results_l(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_angles_l{1,i};
+        results_l(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_RoM_l;
+        results_l(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_RoM_l;
         results_l(idxPart).conditions(idxTrial -4).trials(i).HeelL_velocity = HeelL_velocity;
         
-        step_lengths_r = diff(filtered_tds_r); % Differenz zwischen Touchdown-Indizes = Schrittlänge
-        num_steps_r = length(step_lengths_r);   % Anzahl der Schritte im aktuellen Trial
         
+        num_steps_r = size(step_boundaries_r, 1);   % Anzahl der Schritte im aktuellen Trial
+        step_lengths_r = zeros(num_steps_r, 1);
+
+        % Berechnung der Schrittlänge für jeden Schritt
+        for ii = 1:num_steps_r
+            start_idx = step_boundaries_r(ii, 1); % Linkes Minimum (Start des Schritts)
+            end_idx = step_boundaries_r(ii, 2);   % Rechtes Minimum (Ende des Schritts)
+
+            % Schrittlänge berechnen (Differenz der x-Koordinaten)
+            step_lengths_r(ii) = abs(RHeel(1,end_idx) - RHeel(1,start_idx));
+
+             %Range of Motion
+            foot_RoM_r(ii) = max(foot_angles_r{i}(start_idx:end_idx))-min(foot_angles_r{i}(start_idx:end_idx));
+            knee_RoM_r(ii) = max(knee_angles_r{i}(start_idx:end_idx))-min(knee_angles_r{i}(start_idx:end_idx));
+        end
         % Speichere die Ergebnisse
         results_r(idxPart).conditions(idxTrial-4).trials(i).numStrides = num_steps_r;
         results_r(idxPart).conditions(idxTrial-4).trials(i).strideLengths = step_lengths_r;
         results_r(idxPart).conditions(idxTrial-4).trials(i).meanStepLength = mean(step_lengths_r);
         results_r(idxPart).conditions(idxTrial -4).trials(i).velocity = velocity_CoM_results_f;
         results_r(idxPart).conditions(idxTrial -4).trials(i).walkingDistance = walking_distance;
-        results_r(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_angles_r{1,i};
-        results_r(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_angles_r{1,i};
+        results_r(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_RoM_r;
+        results_r(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_RoM_r;
         results_r(idxPart).conditions(idxTrial -4).trials(i).HeelR_velocity = HeelR_velocity;
     end
 end
@@ -1023,7 +994,10 @@ for participant = 8:17
             trial_data_combined.kneeAngle_r = trial_data_r.kneeAngle;
             trial_data_combined.HeelR_velocity = mean(trial_data_r.HeelR_velocity);
             trial_data_combined.HeelL_velocity = mean(trial_data_l.HeelL_velocity);
-
+            trial_data_combined.force_plate1 =  out_fd_off{i,idxPart}(:,4);
+            trial_data_combined.force_plate2 =  out_fd_off{i,idxPart}(:,19);
+            trial_data_combined.force_plate3 =  out_fd_off{i,idxPart}(:,14);
+            trial_data_combined.force_plate4 =  out_fd_off{i,idxPart}(:,9);
             trial_data_combined.velocity = trial_data_r.velocity;
             
             % Add to combined results

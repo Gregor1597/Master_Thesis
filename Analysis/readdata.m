@@ -28,4 +28,3 @@ for idxParticipant = 8: 19 %length(myFiles) % starting at 3 because there are ad
             end
     end
 end
-out_fd_off = out_fd; 
