@@ -19,18 +19,13 @@ list_of_markers = {'C7'	'LSHO'	'RSHO'	'RBAK'	'CLAV'	'STRN'	'T10'	'SAC'	'RUPA'	'R
 Height = readtable("heights.csv");
 Weight = readtable("weights.csv");
 fc = 10;  
-Fs = 200; 
-%%
-% Sampling Frequency (Hz)
+Fs = 200; % Sampling Frequency (Hz)
 counter = 1;
 dt = 1 / 200; % Zeitintervall in Sekunden (200 Hz)
 for idxPart = 8: 17%sizeArray(2)
     
     counter = counter +1;
-    for idxTrial = 1:9%sizeArray(1)      
-        % if isempty(out{idxTrial, idxPart}) == 1 %|| idxPart == 1 && idxTrial == 13 || idxPart == 2 && idxTrial == 11 || idxPart == 5 && idxTrial == 2 || idxPart == 5 && idxTrial == 7 || idxPart == 5 && idxTrial == 9 || idxPart == 5 && idxTrial == 10 || idxPart == 5 && idxTrial == 13 || idxPart == 5 && idxTrial == 15 || idxPart == 11 && idxTrial == 3 || idxPart == 11 && idxTrial == 15 || idxPart == 22 && idxTrial == 16 || idxPart == 23 && idxTrial == 1 || idxPart == 23 && idxTrial == 3 || idxPart == 23 && idxTrial == 8 || idxPart == 28 && idxTrial == 2 || idxPart == 41 && idxTrial == 2|| idxPart == 41 && idxTrial == 6|| idxPart == 41 && idxTrial == 7 ||idxPart == 2 && idxTrial == 7 || idxPart == 7 && idxTrial == 9 || idxPart == 8 && idxTrial == 4 || idxPart == 11 && idxTrial == 7 || idxPart == 22 && idxTrial == 16  || idxPart == 22 && idxTrial == 17 || idxPart == 34 && idxTrial == 3 || idxPart == 5 && idxTrial == 4
-            % continue
-        %else
+    for idxTrial = 1:9
             markerset = [];
             skeleton = squeeze(skelt_out{idxTrial, idxPart});
             skeleton(isnan(skeleton)) = 0;
@@ -342,22 +337,13 @@ else
     foot_middle(3,:) = ((skeleton(3,20,:) + skeleton(3,24,:))/2);
     RHeel = [];
     LHeel = [];
-    if(idxPart == 14)
-        LHeel(1,:) = (markerset(117,:));
-        LHeel(2,:) = (markerset(118,:));
-        LHeel(3,:) = (markerset(119,:));
-        RHeel(1,:) = (markerset(141,:));
-        RHeel(2,:) = (markerset(142,:));
-        RHeel(3,:) = (markerset(143,:));
-    else
-        LHeel(1,:) = (markerset(121,:));
-        LHeel(2,:) = (markerset(122,:));
-        LHeel(3,:) = (markerset(123,:));
-        RHeel(1,:) = (markerset(145,:));
-        
-        RHeel(2,:) = (markerset(146,:));
-        RHeel(3,:) = (markerset(147,:));
-    end
+    
+    LHeel(1,:) = (markerset(121-sond_cond,:));
+    LHeel(2,:) = (markerset(122-sond_cond,:));
+    LHeel(3,:) = (markerset(123-sond_cond,:));
+    RHeel(1,:) = (markerset(145-sond_cond,:));
+    RHeel(2,:) = (markerset(146-sond_cond,:));
+    RHeel(3,:) = (markerset(147-sond_cond,:));
     % Berechnung der Geschwindigkeit des CoM (in mm/s)
    
     velocity_CoM = sqrt(diff(CoM(1,:)).^2 + diff(CoM(2,:)).^2) / dt;
@@ -412,7 +398,8 @@ else
     
     while ~isempty(stable_walking_start)
         % Finde den nächsten Startpunkt
-        trial_start = stable_walking_start(1);
+         trial_start = stable_walking_start(1);
+   
         
         if  RHeel(1,trial_start) > 800 || trial_start > length(mean_acceleration_x)
             stable_walking_start(1) = []; % Entferne diesen Startpunkt
@@ -426,13 +413,18 @@ else
             stable_walking_start(1) =[];
             continue;
         end% sonderfall
+        
+        if(idxPart==14 && idxTrial==7)
+            min_frames_between_starts=2000;
+        else
+            min_frames_between_starts=2500;
+        end
          % Entferne Startpunkte, die vor dem letzten Endpunkt liegen oder zu
         % nah dran sind und nicht im Bereichder start force plates liegen
         if trial_start < last_end_idx + min_frames_between_starts  && ~isempty(trials)
             stable_walking_start(1) = []; % Entferne diesen Startpunkt
             continue;
         end
-        
         % Entferne alle verbleibenden Startpunkte bis trial_start
         stable_walking_start(stable_walking_start <= trial_start) = [];
         
@@ -448,6 +440,7 @@ else
         % eine ausreichende Geschwindkeit 
         if trial_end > trial_start && max(velocity_CoM_filt(trial_start:trial_end)) > 620
             % Speichere den aktuellen Trial
+  
             % **Endpunkt erweitern**:
             % Stelle sicher, dass wir nicht über die Datenlänge hinausgehen
             if(idxPart==14 &&idxTrial==7 && trial_start==31328)
@@ -506,16 +499,16 @@ else
             Foot_angle_l =[];
 
             for idx = 1:length(V0)
-                Knee_angle_r(idx) = acosd(dot(V0(:,idx),V2(:,idx)) / (norm(V0(:,idx)) * norm(V2(:,idx))) );
+                Knee_angle_r(idx) = atan2d(norm(cross(V0(:,idx), V2(:,idx))), dot(V0(:,idx), V2(:,idx)));            
             end
             for idx = 1:length(V1)
-                Knee_angle_l(idx) = acosd(dot(V1(:,idx),V3(:,idx)) / (norm(V1(:,idx)) * norm(V3(:,idx))) );
+                Knee_angle_l(idx) = atan2d(norm(cross(V1(:,idx), V3(:,idx))), dot(V1(:,idx), V3(:,idx)));
             end
             for idx = 1:length(V0)
-                Foot_angle_r(idx) = acosd(dot(V4(:,idx),V0(:,idx)) / (norm(V4(:,idx)) * norm(V0(:,idx))) );
+                Foot_angle_r(idx) = atan2d(norm(cross(V4(:,idx), V0(:,idx))), dot(V4(:,idx), V0(:,idx)));
             end
             for idx = 1:length(V1)
-                Foot_angle_l(idx) = acosd(dot(V5(:,idx),V1(:,idx)) / (norm(V5(:,idx)) * norm(V1(:,idx))) );
+                Foot_angle_l(idx) = atan2d(norm(cross(V5(:,idx), V1(:,idx))), dot(V5(:,idx), V1(:,idx)));
             end
 
             foot_angles_l{start_idx} = Foot_angle_l;
@@ -549,6 +542,8 @@ end
 
 %% schritte schneiden
 cond = list_of_names(idxTrial, idxPart);
+% Mindestlänge in Frames (z. B. 50 Frames bei 200 Hz entspricht 0.25 Sekunden)
+min_step_length = 50;
 if(contains(cond, "baseline"))
     RHeel = [];
     LHeel = [];
@@ -557,28 +552,33 @@ if(contains(cond, "baseline"))
     knee_angles_l =[];
     knee_angles_r =[];
     min_frame_distance = 140; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
-    if(idxPart == 14)
-        LHeel(1,:) = (markerset(117,:));
-        LHeel(2,:) = (markerset(118,:));
-        LHeel(3,:) = (markerset(119,:));
-        RHeel(1,:) = (markerset(141,:));
-        RHeel(2,:) = (markerset(142,:));
-        RHeel(3,:) = (markerset(143,:));
-    else
-        LHeel(1,:) = (markerset(121,:));
-        LHeel(2,:) = (markerset(122,:));
-        LHeel(3,:) = (markerset(123,:));
-        RHeel(1,:) = (markerset(145,:));
-        RHeel(2,:) = (markerset(146,:));
-        RHeel(3,:) = (markerset(147,:));
-    end
+    LKNE(1,:) = (markerset(109-sond_cond,:));
+    LKNE(2,:) = (markerset(110-sond_cond,:));
+    LKNE(3,:) = (markerset(111-sond_cond,:));
+    RKNE(1,:) = (markerset(133-sond_cond,:));
+    RKNE(2,:) = (markerset(134-sond_cond,:));
+    RKNE(3,:) = (markerset(135-sond_cond,:));
+    LHeel(1,:) = (markerset(121-sond_cond,:));
+    LHeel(2,:) = (markerset(122-sond_cond,:));
+    LHeel(3,:) = (markerset(123-sond_cond,:));
+    RHeel(1,:) = (markerset(145-sond_cond,:));
+    RHeel(2,:) = (markerset(146-sond_cond,:));
+    RHeel(3,:) = (markerset(147-sond_cond,:));
+    % Dynamische Anpassung der MinPeakHeight
+    heel_range_r = max(RHeel(3,:)) - min(RHeel(3,:));
+    heel_range_l = max(LHeel(3,:)) - min(LHeel(3,:));
+
+    % Faktor für MinPeakHeight (z. B. 20% des Signalbereichs)
+    min_peak_factor = 0.66;
+
+    % Dynamisch berechneter MinPeakHeight
+    min_peak_height_r = heel_range_r * min_peak_factor;
+    min_peak_height_l = heel_range_l * min_peak_factor;
+
     %% RHeel
-    % steps =[];
-    % touchdowns_r = [];
-    % start_value = RHeel(3,1);
-    % % Dynamische Anpassung der Prominenz
-    signal = RHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
-    [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height);
+    
+    signal = RHeel(3,:); 
+    [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height_r);
     
     search_range = 100;
 
@@ -602,7 +602,7 @@ if(contains(cond, "baseline"))
         step_boundaries_r = [step_boundaries_r; left_idx, right_idx];
     end
 
-    % Minima visualisieren
+    % %Minima visualisieren
     % figure;
     % plot(signal);
     % hold on;
@@ -621,29 +621,45 @@ if(contains(cond, "baseline"))
         step_start = step_boundaries_r(ii, 1);
         step_end = step_boundaries_r(ii, 2);
         steps_r{ii} = signal(step_start:step_end);
+        
+    end
+    valid_steps_r = step_boundaries_r((step_boundaries_r(:,2) - step_boundaries_r(:,1)) >= min_step_length, :);
+    last_step_incomplete_r = false;
+    if ~isempty(valid_steps_r) && valid_steps_r(end,2) >= size(RHeel, 2) - 1
+        last_step_incomplete_r = true;
+        valid_steps_r(end, :) = [];
+    end
+
+    num_steps_r = size(valid_steps_r, 1);
+    step_lengths_r = zeros(num_steps_r, 1);
+
+    % Berechnung der Schrittlänge für jeden Schritt rechts
+    for ii = 1:num_steps_r
+        start_idx = valid_steps_r(ii, 1);
+        end_idx = valid_steps_r(ii, 2);   % Rechtes Minimum (Ende des Schritts)
         %Range of Motion
-        V0 = CoM_Shank_r(start_idx:end_idx);
-        V2 = CoM_Thigh_r(start_idx:end_idx);
-        V4 = CoM_Foot_r(start_idx:end_idx);
+        V0 = CoM_Shank_r(:,start_idx:end_idx);
+        V2 = CoM_Thigh_r(:,start_idx:end_idx);
+        V4 = CoM_Foot_r(:,start_idx:end_idx);
         Knee_angle_r =[];
         Foot_angle_r =[];
         for idx = 1:length(V0)
-            Knee_angle_r(idx) = acosd(dot(V0(:,idx),V2(:,idx)) / (norm(V0(:,idx)) * norm(V2(:,idx))) );
+            Knee_angle_r(idx) = atan2d(norm(cross(V0(:,idx), V2(:,idx))), dot(V0(:,idx), V2(:,idx)));
         end
+
         for idx = 1:length(V0)
-            Foot_angle_r(idx) = acosd(dot(V4(:,idx),V0(:,idx)) / (norm(V4(:,idx)) * norm(V0(:,idx))) );
+            Foot_angle_r(idx) = atan2d(norm(cross(V4(:,idx), V0(:,idx))), dot(V4(:,idx), V0(:,idx)));
         end
+
         foot_angles_r(ii) = max(Foot_angle_r)-min(Foot_angle_r);
         knee_angles_r(ii) = max(Knee_angle_r)-min(Knee_angle_r);
+        % Schrittlänge berechnen (Differenz der x-Koordinaten)
+        step_lengths_r(ii) = abs(RHeel(1,end_idx) - RHeel(1,start_idx));
     end
     %% Lheel
-    % steps_l =[];
-    % touchdowns_l = [];
-    % start_value_l = LHeel(3,1);
-    % min_start_dist = 70;
-    % % Dynamische Anpassung der Prominenz
-    signal = LHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
-    [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height);
+ 
+    signal = LHeel(3,:); 
+    [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height_l);
     
     search_range = 100;
 
@@ -675,28 +691,35 @@ if(contains(cond, "baseline"))
         step_end = step_boundaries_l(ii, 2);
         steps_l{ii} = signal(step_start:step_end);
     end
-    % Schrittlängen berechnen
-    num_steps_l = size(step_boundaries_l,1);   % Anzahl der Schritte im aktuellen Trial
+    valid_steps_l = step_boundaries_l((step_boundaries_l(:,2) - step_boundaries_l(:,1)) >= min_step_length, :);
+    last_step_incomplete_l = false;
+    if ~isempty(valid_steps_l) && valid_steps_l(end,2) >= size(LHeel, 2) - 1
+        last_step_incomplete_l = true;
+        valid_steps_l(end, :) = [];
+    end
+
+    num_steps_l = size(valid_steps_l, 1);
     step_lengths_l = zeros(num_steps_l, 1);
 
-    % Berechnung der Schrittlänge für jeden Schritt
+    % Berechnung der Schrittlänge für jeden Schritt rechts
     for ii = 1:num_steps_l
-        start_idx = step_boundaries_l(ii, 1); % Linkes Minimum (Start des Schritts)
-        end_idx = step_boundaries_l(ii, 2);   % Rechtes Minimum (Ende des Schritts)
-
+        start_idx = valid_steps_l(ii, 1);
+        end_idx = valid_steps_l(ii, 2);   % Rechtes Minimum (Ende des Schritts)
         % Schrittlänge berechnen (Differenz der x-Koordinaten)
         step_lengths_l(ii) = abs(LHeel(1,end_idx) - LHeel(1,start_idx));
         %Range of Motion
-        V0 = CoM_Shank_l(start_idx:end_idx);
-        V2 = CoM_Thigh_l(start_idx:end_idx);
-        V4 = CoM_Foot_l(start_idx:end_idx);
+        V0 = CoM_Shank_l(:,start_idx:end_idx);
+        V2 = CoM_Thigh_l(:,start_idx:end_idx);
+        V4 = CoM_Foot_l(:,start_idx:end_idx);
         Knee_angle_l =[];
         Foot_angle_l =[];
+
         for idx = 1:length(V0)
-            Knee_angle_l(idx) = acosd(dot(V0(:,idx),V2(:,idx)) / (norm(V0(:,idx)) * norm(V2(:,idx))) );
+            Knee_angle_l(idx) = atan2d(norm(cross(V0(:,idx), V2(:,idx))), dot(V0(:,idx), V2(:,idx)));
         end
+
         for idx = 1:length(V0)
-            Foot_angle_l(idx) = acosd(dot(V4(:,idx),V0(:,idx)) / (norm(V4(:,idx)) * norm(V0(:,idx))) );
+            Foot_angle_l(idx) = atan2d(norm(cross(V0(:,idx), V4(:,idx))), dot(V0(:,idx), V4(:,idx)));
         end
         foot_angles_l(ii) = max(Foot_angle_l)-min(Foot_angle_l);
         knee_angles_l(ii) = max(Knee_angle_l)-min(Knee_angle_l);
@@ -715,19 +738,12 @@ if(contains(cond, "baseline"))
     results_l(idxPart).conditions(1).trials(idxTrial).footAngle = foot_angles_l;
     results_l(idxPart).conditions(1).trials(idxTrial).kneeAngle = knee_angles_l;
     results_l(idxPart).conditions(1).trials(idxTrial).HeelL_velocity = HeelL_velocity;
+    results_l(idxPart).conditions(1).trials(idxTrial).HeelL_z = LHeel(3, :);
+    results_l(idxPart).conditions(1).trials(idxTrial).KneeL_z = LKNE(3, :);
+    results_l(idxPart).conditions(1).trials(idxTrial).lastStepIncomplete = last_step_incomplete_l;
 
-    num_steps_r = size(step_boundaries_r,1);   % Anzahl der Schritte im aktuellen Trial
-    step_lengths_r = zeros(num_steps_r, 1);
-
-    % Berechnung der Schrittlänge für jeden Schritt
-    for ii = 1:num_steps_r
-        start_idx = step_boundaries_r(ii, 1); % Linkes Minimum (Start des Schritts)
-        end_idx = step_boundaries_r(ii, 2);   % Rechtes Minimum (Ende des Schritts)
-
-        % Schrittlänge berechnen (Differenz der x-Koordinaten)
-        step_lengths_r(ii) = abs(RHeel(1,end_idx) - RHeel(1,start_idx));
-    end
-
+    results_r(idxPart).conditions(1).trials(idxTrial).HeelR_z = RHeel(3, :);
+    results_r(idxPart).conditions(1).trials(idxTrial).KneeR_z = RKNE(3, :);
     % Speichere die Ergebnisse
     results_r(idxPart).conditions(1).trials(idxTrial).numStrides = num_steps_r;
     results_r(idxPart).conditions(1).trials(idxTrial).strideLengths = step_lengths_r;
@@ -737,7 +753,7 @@ if(contains(cond, "baseline"))
     results_r(idxPart).conditions(1).trials(idxTrial).footAngle = foot_angles_r;
     results_r(idxPart).conditions(1).trials(idxTrial).kneeAngle = knee_angles_r;
     results_r(idxPart).conditions(1).trials(idxTrial).HeelR_velocity = HeelR_velocity;
-
+    results_r(idxPart).conditions(1).trials(idxTrial).lastStepIncomplete = last_step_incomplete_r;
 
 else %not baseline
     for i=1 :length(trials_marker)
@@ -745,37 +761,40 @@ else %not baseline
         marker_set = trials_marker{i};
         RHeel = [];
         LHeel = [];
+        LKNEE =[];
+        RKNEE =[];
         min_frame_distance = 125; % Mindestens 100 Frames Abstand zwischen Touchdown-Punkten
         min_start_dist = 10; % mindestens abstand zum Start (soll gegen noise am Anfang helfen)
-        min_peak_height = 150; % Mindesthöhe für Maxima
         n = 200; % Anzahl der letzten Frames, die geprüft werden
         m = 40; % Erweiterter Suchbereich bei fehlendem Minimum
         threshold = 5; % Toleranzbereich um das Minimum (z. B. in mm)
-        if(idxPart == 14)
-            prominence_factor = 0.0075; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-            LHeel(1,:) = (marker_set(117,:));
-            LHeel(2,:) = (marker_set(118,:));
-            LHeel(3,:) = (marker_set(119,:));
-            RHeel(1,:) = (marker_set(141,:));
-            RHeel(2,:) = (marker_set(142,:));
-            RHeel(3,:) = (marker_set(143,:));
-        else
-            prominence_factor = 0.03; % Faktor zur Anpassung (z. B. 10 % des Signalbereichs)
-            LHeel(1,:) = (marker_set(121,:));
-            LHeel(2,:) = (marker_set(122,:));
-            LHeel(3,:) = (marker_set(123,:));
-            RHeel(1,:) = (marker_set(145,:));
-            RHeel(2,:) = (marker_set(146,:));
-            RHeel(3,:) = (marker_set(147,:));
-        end
-        %% RHeel
-        %  steps_r = {};
-        %  touchdowns_r = [];
-        %
-        %  % Dynamische Anpassung der Prominenz
-        signal = RHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
+        LKNEE(1,:) = (marker_set(109-sond_cond,:));
+        LKNEE(2,:) = (marker_set(110-sond_cond,:));
+        LKNEE(3,:) = (marker_set(111-sond_cond,:));
+        RKNEE(1,:) = (marker_set(133-sond_cond,:));
+        RKNEE(2,:) = (marker_set(134-sond_cond,:));
+        RKNEE(3,:) = (marker_set(135-sond_cond,:));
+        LHeel(1,:) = (marker_set(121-sond_cond,:));
+        LHeel(2,:) = (marker_set(122-sond_cond,:));
+        LHeel(3,:) = (marker_set(123-sond_cond,:));
+        RHeel(1,:) = (marker_set(145-sond_cond,:));
+        RHeel(2,:) = (marker_set(146-sond_cond,:));
+        RHeel(3,:) = (marker_set(147-sond_cond,:));
+        % Dynamische Anpassung der MinPeakHeight
+        heel_range_r = max(RHeel(3,:)) - min(RHeel(3,:));
+        heel_range_l = max(LHeel(3,:)) - min(LHeel(3,:));
+        
+        % Faktor für MinPeakHeight (z. B. 20% des Signalbereichs)
+        min_peak_factor = 0.66;
+        
+        % Dynamisch berechneter MinPeakHeight
+        min_peak_height_r = heel_range_r * min_peak_factor;
+        min_peak_height_l = heel_range_l * min_peak_factor;
 
-        [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height);
+        %% RHeel
+        signal = RHeel(3,:); 
+
+        [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height_r);
 
         % Reichweite für Suche nach Minima (z. B. 100 Frames nach links und rechts)
         search_range = 100;
@@ -800,7 +819,7 @@ else %not baseline
             step_boundaries_r = [step_boundaries_r; left_idx, right_idx];
         end
 
-        % Minima visualisieren
+        % %Minima visualisieren
         % figure;
         % plot(signal);
         % hold on;
@@ -824,23 +843,11 @@ else %not baseline
 
         
         %% Lheel
-        % steps_l = {};
-        % touchdowns_l = [];
-        %
-        % % Dynamische Anpassung der Prominenz
-        signal = LHeel(3,:); % Beispielsignal (Höhendaten des linken Fußes)
+      
+        signal = LHeel(3,:); 
 
-        [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height);
+        [maxima, max_indices] = findpeaks(signal, 'MinPeakHeight', min_peak_height_l);
 
-        % Maxima visualisieren
-        % figure;
-        % plot(signal);
-        % hold on;
-        % plot(max_indices, maxima, 'ro'); % Maxima markieren
-        % title(["Left Heel: Participant: ",idxPart , " ;Condition: ", list_of_names(idxTrial, idxPart), " Trial: ", i])
-        % xlabel('Frame');
-        % ylabel('Amplitude');
-        % hold off;
         % Reichweite für Suche nach Minima (z. B. 100 Frames nach links und rechts)
         search_range = 100;
 
@@ -864,7 +871,7 @@ else %not baseline
             step_boundaries_l = [step_boundaries_l; left_idx, right_idx];
         end
 
-        % Minima visualisieren
+        % %Minima visualisieren
         % figure;
         % plot(signal);
         % hold on;
@@ -887,49 +894,41 @@ else %not baseline
         
 
 %%
-         % Schrittlängen berechnen
+        % Standardwert für unvollständigen letzten Schritt
+        last_step_incomplete_r = false;
+        last_step_incomplete_l = false;
+        valid_steps_r = step_boundaries_r((step_boundaries_r(:,2) - step_boundaries_r(:,1)) >= min_step_length, :);
+        valid_steps_l = step_boundaries_l((step_boundaries_l(:,2) - step_boundaries_l(:,1)) >= min_step_length, :);
+        % Überprüfung auf unvollständige Schritte rechts
+        if ~isempty(valid_steps_r) && valid_steps_r(end,2) >= size(RHeel, 2) - 1
+            last_step_incomplete_r = true;
+            valid_steps_r(end, :) = [];
+        end
         
-        num_steps_l = size(step_boundaries_l,1);   % Anzahl der Schritte im aktuellen Trial
+        % Überprüfung auf unvollständige Schritte links
+        if ~isempty(valid_steps_l) && valid_steps_l(end,2) >= size(LHeel, 2) - 1
+            last_step_incomplete_l = true;
+            valid_steps_l(end, :) = [];
+        end
+         % Schrittlängen berechnen
+        num_steps_l = size(valid_steps_l, 1);
         step_lengths_l = zeros(num_steps_l, 1);
-
         % Berechnung der Schrittlänge für jeden Schritt
         for ii = 1:num_steps_l
-            start_idx = step_boundaries_l(ii, 1); % Linkes Minimum (Start des Schritts)
-            end_idx = step_boundaries_l(ii, 2);   % Rechtes Minimum (Ende des Schritts)
+            start_idx = valid_steps_l(ii, 1);
+            end_idx = valid_steps_l(ii, 2); % Rechtes Minimum (Ende des Schritts)
 
             % Schrittlänge berechnen (Differenz der x-Koordinaten)
             step_lengths_l(ii) = abs(LHeel(1,end_idx) - LHeel(1,start_idx));
             foot_RoM_l(ii) = max(foot_angles_l{i}(start_idx:end_idx))-min(foot_angles_l{i}(start_idx:end_idx));
             knee_RoM_l(ii) = max(knee_angles_l{i}(start_idx:end_idx))-min(knee_angles_l{i}(start_idx:end_idx));
         end
-        walking_distance = max(CoM(1,:)) - min(CoM(1,:));%sum(abs(diff(CoM(1,:))));
-        velocity_CoM_results = sqrt(diff(trials{1,i}(1,:)).^2 + diff(trials{1,i}(2,:)).^2) / dt;
-        velocity_CoM_results(velocity_CoM_results> 1300) =0;
-        [d,da] = butter(4,fc/(Fs/2));
-        velocity_CoM_results_f = filtfilt(d,da,velocity_CoM_results');
-        HeelR_velocity = sqrt(diff(RHeel(1,:)).^2 + diff(RHeel(2,:)).^2 + diff(RHeel(3,:)).^2) ./ dt;
-        HeelL_velocity = sqrt(diff(LHeel(1,:)).^2 + diff(LHeel(2,:)).^2 + diff(LHeel(3,:)).^2) ./ dt;
-        
-        %disp(mean(velocity_CoM_results));
-        %%
-        % Speichere die Ergebnisse
-        results_l(idxPart).conditions(idxTrial-4).trials(i).numStrides = num_steps_l;
-        results_l(idxPart).conditions(idxTrial-4).trials(i).strideLengths = step_lengths_l;
-        results_l(idxPart).conditions(idxTrial-4).trials(i).meanStepLength = mean(step_lengths_l);
-        results_l(idxPart).conditions(idxTrial -4).trials(i).velocity = velocity_CoM_results_f;
-        results_l(idxPart).conditions(idxTrial -4).trials(i).walkingDistance = walking_distance;
-        results_l(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_RoM_l;
-        results_l(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_RoM_l;
-        results_l(idxPart).conditions(idxTrial -4).trials(i).HeelL_velocity = HeelL_velocity;
-        
-        
-        num_steps_r = size(step_boundaries_r, 1);   % Anzahl der Schritte im aktuellen Trial
+        num_steps_r = size(valid_steps_r, 1);
         step_lengths_r = zeros(num_steps_r, 1);
-
-        % Berechnung der Schrittlänge für jeden Schritt
+        % Berechnung der Schrittlänge für jeden Schritt rechts
         for ii = 1:num_steps_r
-            start_idx = step_boundaries_r(ii, 1); % Linkes Minimum (Start des Schritts)
-            end_idx = step_boundaries_r(ii, 2);   % Rechtes Minimum (Ende des Schritts)
+            start_idx = valid_steps_r(ii, 1);
+            end_idx = valid_steps_r(ii, 2);  % Rechtes Minimum (Ende des Schritts)
 
             % Schrittlänge berechnen (Differenz der x-Koordinaten)
             step_lengths_r(ii) = abs(RHeel(1,end_idx) - RHeel(1,start_idx));
@@ -938,89 +937,43 @@ else %not baseline
             foot_RoM_r(ii) = max(foot_angles_r{i}(start_idx:end_idx))-min(foot_angles_r{i}(start_idx:end_idx));
             knee_RoM_r(ii) = max(knee_angles_r{i}(start_idx:end_idx))-min(knee_angles_r{i}(start_idx:end_idx));
         end
+
+        walking_distance = max(CoM(1,:)) - min(CoM(1,:));%sum(abs(diff(CoM(1,:))));
+        velocity_CoM_results = sqrt(diff(trials{1,i}(1,:)).^2 + diff(trials{1,i}(2,:)).^2) / dt;
+        velocity_CoM_results(velocity_CoM_results> 1300) =0;
+        [d,da] = butter(4,fc/(Fs/2));
+        velocity_CoM_results_f = filtfilt(d,da,velocity_CoM_results');
+        HeelR_velocity = sqrt(diff(RHeel(1,:)).^2 + diff(RHeel(2,:)).^2 + diff(RHeel(3,:)).^2) ./ dt;
+        HeelL_velocity = sqrt(diff(LHeel(1,:)).^2 + diff(LHeel(2,:)).^2 + diff(LHeel(3,:)).^2) ./ dt;
+        
+        
+        %%
+        % Speichere die Ergebnisse
+        results_l(idxPart).conditions(idxTrial-4).trials(i).numStrides = num_steps_l;
+        results_l(idxPart).conditions(idxTrial-4).trials(i).strideLengths = step_lengths_l;
+        results_l(idxPart).conditions(idxTrial-4).trials(i).meanStepLength = mean(step_lengths_l);
+        results_l(idxPart).conditions(idxTrial-4).trials(i).lastStepIncomplete = last_step_incomplete_l;
+        results_l(idxPart).conditions(idxTrial -4).trials(i).velocity = velocity_CoM_results_f;
+        results_l(idxPart).conditions(idxTrial -4).trials(i).walkingDistance = walking_distance;
+        results_l(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_RoM_l;
+        results_l(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_RoM_l;
+        results_l(idxPart).conditions(idxTrial -4).trials(i).HeelL_velocity = HeelL_velocity;
+        results_l(idxPart).conditions(idxTrial-4).trials(i).HeelL_z = LHeel(3, :);
+        results_l(idxPart).conditions(idxTrial-4).trials(i).KneeL_z = LKNEE(3, :);
+        
         % Speichere die Ergebnisse
         results_r(idxPart).conditions(idxTrial-4).trials(i).numStrides = num_steps_r;
         results_r(idxPart).conditions(idxTrial-4).trials(i).strideLengths = step_lengths_r;
         results_r(idxPart).conditions(idxTrial-4).trials(i).meanStepLength = mean(step_lengths_r);
+        results_r(idxPart).conditions(idxTrial-4).trials(i).lastStepIncomplete = last_step_incomplete_r;
         results_r(idxPart).conditions(idxTrial -4).trials(i).velocity = velocity_CoM_results_f;
         results_r(idxPart).conditions(idxTrial -4).trials(i).walkingDistance = walking_distance;
         results_r(idxPart).conditions(idxTrial -4).trials(i).footAngle = foot_RoM_r;
         results_r(idxPart).conditions(idxTrial -4).trials(i).kneeAngle = knee_RoM_r;
         results_r(idxPart).conditions(idxTrial -4).trials(i).HeelR_velocity = HeelR_velocity;
+        results_r(idxPart).conditions(idxTrial-4).trials(i).HeelR_z = RHeel(3, :);
+        results_r(idxPart).conditions(idxTrial-4).trials(i).KneeR_z = RKNEE(3, :);
     end
 end
     end
 end
-
-%%
-% Combine results_l and results_r into a unified structure
-combined_results = struct();
-num_trials = [5,10,10,10,10];
-conditions = ["Baseline", "Large", "NoAvatar","Normal", "Small" ];
-for participant = 8:17
-    participant_name = sprintf('Participant%d', participant);
-    combined_results.(participant_name) = struct();
-    
-    for condition = 1:5
-        condition_name = sprintf('Condition%d', condition);
-        combined_results.(participant_name).(condition_name) = struct();
-        if participant == 16 && condition == 5
-            num_trials = [5,10,10,10,9];
-        elseif participant == 14 && condition ==3
-            num_trials = [5,10,9,10,10];
-        else
-            num_trials = [5,10,10,10,10];
-        end
-        
-        for trial = 1:num_trials(condition)
-            % Left foot data
-            trial_data_l = results_l(participant).conditions(condition).trials(trial);
-            
-            % Right foot data
-            trial_data_r = results_r(participant).conditions(condition).trials(trial);
-            
-            % Combine data
-            trial_data_combined = struct();
-            trial_data_combined.numStrides_l = trial_data_l.numStrides;
-            trial_data_combined.strideLengths_l = trial_data_l.strideLengths;
-            trial_data_combined.walking_distance_l = trial_data_l.walkingDistance;
-            trial_data_combined.footAngle_l = trial_data_l.footAngle;
-            trial_data_combined.kneeAngle_l = trial_data_l.kneeAngle;
-            trial_data_combined.mean_velocity = mean(trial_data_r.velocity);
-            trial_data_combined.numStrides_r = trial_data_r.numStrides;
-            trial_data_combined.strideLengths_r = trial_data_r.strideLengths;
-            trial_data_combined.walking_distance_r = trial_data_r.walkingDistance;
-            trial_data_combined.footAngle_r = trial_data_r.footAngle;
-            trial_data_combined.kneeAngle_r = trial_data_r.kneeAngle;
-            trial_data_combined.HeelR_velocity = mean(trial_data_r.HeelR_velocity);
-            trial_data_combined.HeelL_velocity = mean(trial_data_l.HeelL_velocity);
-            trial_data_combined.force_plate1 =  out_fd_off{i,idxPart}(:,4);
-            trial_data_combined.force_plate2 =  out_fd_off{i,idxPart}(:,19);
-            trial_data_combined.force_plate3 =  out_fd_off{i,idxPart}(:,14);
-            trial_data_combined.force_plate4 =  out_fd_off{i,idxPart}(:,9);
-            trial_data_combined.velocity = trial_data_r.velocity;
-            
-            % Add to combined results
-            trial_name = sprintf('Trial%d', trial);
-            combined_results.(participant_name).(condition_name).(trial_name) = trial_data_combined;
-        end
-    end
-end
-
-% Save as JSON
-jsonText = jsonencode(combined_results, 'PrettyPrint', true);
-fileID = fopen('combined_step_analysis_results_with_arrays.json', 'w');
-fwrite(fileID, jsonText);
-fclose(fileID);
-
-disp('Export with arrays as JSON completed.');
-
-% %%
-% clf
-% plot(out_fd_off{33, 8}(:,4))
-% hold on
-% plot(out_fd_off{33, 8}(:,9))
-% plot(out_fd_off{33, 8}(:,14))
-% plot(out_fd_off{33, 8}(:,19))
-% shg
-

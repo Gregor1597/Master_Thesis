@@ -1,0 +1,61 @@
+% Extract and save mean force plate data
+mean_force_plate_data = struct();
+
+for condition = 1:5
+    all_force_data_fp1 = [];
+    all_force_data_fp2 = [];
+    all_force_data_fp3 = [];
+    all_force_data_fp4 = [];
+    
+    for participant = 8:17
+        if participant == 16 && condition == 5
+            num_trials = [5,10,10,10,9];
+        elseif participant == 14 && condition == 3
+            num_trials = [5,10,9,10,10];
+        else
+            num_trials = [5,10,10,10,10];
+        end
+        
+        for trial = 1:num_trials(condition)
+            % Extract force plate data
+            fp1 = mean(out_fd_off{condition,participant}(:,4));
+            fp2 = mean(out_fd_off{condition,participant}(:,19));
+            fp3 = mean(out_fd_off{condition,participant}(:,14));
+            fp4 = mean(out_fd_off{condition,participant}(:,9));
+            
+            % Append to condition data
+            all_force_data_fp1 = [all_force_data_fp1; fp1];
+            all_force_data_fp2 = [all_force_data_fp2; fp2];
+            all_force_data_fp3 = [all_force_data_fp3; fp3];
+            all_force_data_fp4 = [all_force_data_fp4; fp4];
+        end
+    end
+    
+    mean_force_plate_data.(sprintf('Condition%d', condition)) = struct(;
+        'FP1', mean(all_force_data_fp1),
+        'FP2', mean(all_force_data_fp2), 
+        'FP3', mean(all_force_data_fp3),
+        'FP4', mean(all_force_data_fp4));
+end
+
+% Save mean force plate data as JSON
+jsonText_fp = jsonencode(mean_force_plate_data, 'PrettyPrint', true);
+fileID_fp = fopen('mean_force_plate_data.json', 'w');
+fwrite(fileID_fp, jsonText_fp);
+fclose(fileID_fp);
+
+disp('Mean force plate data export completed.');
+
+% Plot mean force plate values over conditions
+conditions = ["Baseline", "Large", "NoAvatar", "Normal", "Small"];
+figure;
+hold on;
+plot(1:5, cell2mat(struct2cell(mean_force_plate_data))', '-o');
+set(gca, 'XTick', 1:5, 'XTickLabel', conditions);
+xlabel('Conditions');
+ylabel('Mean Force Plate Value');
+legend({'FP1', 'FP2', 'FP3', 'FP4'}, 'Location', 'best');
+title('Mean Force Plate Data by Condition');
+hold off;
+
+disp('Plotting completed.');
